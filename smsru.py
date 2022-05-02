@@ -1,10 +1,13 @@
 from urllib import request
 from urllib import parse
+from abc import ABCMeta
+from abc import abstractmethod
 
 import time
 import re
 import json
 import ipaddress
+import aiohttp
 
 
 class OutOfPhoneNumbers(Exception):
@@ -15,19 +18,35 @@ class OutOfTimestamp(Exception):
     pass
 
 
-class ISmsRu:
+class ABCSmsRu:
     """ SMS.RU API class
             :param api_id: Ваш API ключ на главной странице личного кабинета """
+    __metaclass__ = ABCMeta
 
     def __init__(self, api_id):
         self._debug_status = False
         self._api_id = api_id
-        self.data = {'api_id': self.api_id, 'json': 1, 'partner_id': 358434}
+        self._data = {'api_id': self.api_id, 'json': 1, 'partner_id': 358434}
 
     @property
     def api_id(self):
         return self._api_id
 
+    @property
+    def data(self):
+        return self._data
+
+    @staticmethod
+    @abstractmethod
+    def _request(url, path, data):
+        """ Запрос на сревер
+            :param url: ссылка на сервер https://sms.ru
+            :param path: путь для отправки данных
+            :param data: данные для отправки на сервер
+            :return response: Ответ от сервера """
+        pass
+
+    @abstractmethod
     def send(self, numbers: list[str], message: str, from_name: str, ip_address: str, timestamp: int,
              ttl: int, day_time: bool, translit: bool, test: bool, debug: bool):
         """ Отправка сообщения на сервер SMS.RU
@@ -48,15 +67,10 @@ class ISmsRu:
                 :return response: Ответ от сервера """
         pass
 
-
-class SmsRu(ISmsRu):
-    def __init__(self, api_id):
-        super().__init__(api_id)
-
-    def send(self, numbers, message,
-             from_name=None, ip_address=None,
-             timestamp=None, ttl=None, day_time=False,
-             translit=False, test=None, debug=False):
+    def _collect_data(self, numbers, message,
+                      from_name, ip_address,
+                      timestamp, ttl, day_time,
+                      translit, test, debug):
         if ip_address is not None:
             converted_ip = ipaddress.ip_address(ip_address)
             if not (type(converted_ip) is ipaddress.IPv4Address or type(converted_ip) is ipaddress.IPv6Address):
@@ -65,38 +79,67 @@ class SmsRu(ISmsRu):
             test = debug
         self._debug_status = debug
 
-        url = f"https://sms.ru/sms/send"
-
         if len(numbers) < 100:
             numbers = [re.sub(r'^(\+?7|8)|\D', '', i) for i in numbers]
-            self.data.update({'to': ','.join(numbers)})
+            self._data.update({'to': ','.join(numbers)})
         else:
             raise OutOfPhoneNumbers('Количетсво номеров телефонов не может быть больше 100 за одн запрос')
 
-        self.data.update({'text': message})
+        self._data.update({'text': message})
         if test:
-            self.data.update({'test': 1})
+            self._data.update({'test': 1})
         if from_name is not None:
-            self.data.update({'from': from_name})
+            self._data.update({'from': from_name})
         if timestamp is not None:
             if int(time.time()) - timestamp > 5184000:
                 raise OutOfTimestamp('Задержка сообщения не может быть больше 60 дней')
-            self.data.update({'time': int(timestamp)})
+            self._data.update({'time': int(timestamp)})
         if ttl is not None:
             if ttl > 1440:
                 raise OutOfTimestamp('TTL не может быть больше 1440 минут')
             elif ttl < 1:
                 raise OutOfTimestamp('TTL не может быть меньше 1 минуты')
-            self.data.update({'ttl': int(ttl)})
+            self._data.update({'ttl': int(ttl)})
         if day_time:
-            self.data.update({'daytime': 1})
+            self._data.update({'daytime': 1})
         if ip_address is not None:
-            self.data.update({'ip': ip_address})
+            self._data.update({'ip': ip_address})
         if translit:
-            self.data.update({'translit': 1})
-        data = parse.urlencode(self.data).encode()
-        req = request.Request(url, data=data)
-        res = request.urlopen(req)
-        response = json.loads(res.read())
-        return response
+            self._data.update({'translit': 1})
 
+
+class SmsRu(ABCSmsRu):
+    def __init__(self, api_id):
+        super().__init__(api_id)
+
+    @staticmethod
+    def _request(url, path, data):
+        encoded_data = parse.urlencode(data).encode()
+        req = request.Request(f'{url}{path}', data=encoded_data)
+        res = request.urlopen(req)
+        return json.loads(res.read())
+
+    def send(self, numbers, message,
+             from_name=None, ip_address=None,
+             timestamp=None, ttl=None, day_time=False,
+             translit=False, test=None, debug=False):
+        self._collect_data(numbers, message, from_name, ip_address, timestamp, ttl, day_time, translit, test, debug)
+        return self._request("https://sms.ru", '/sms/send', self.data)
+
+
+class AsyncSmsRu(ABCSmsRu):
+    def __init__(self, api_id):
+        super().__init__(api_id)
+
+    @staticmethod
+    async def _request(url, path, data):
+        async with aiohttp.ClientSession(url) as session:
+            async with session.post(path, data=data) as res:
+                return await res.json()
+
+    async def send(self, numbers, message,
+                   from_name=None, ip_address=None,
+                   timestamp=None, ttl=None, day_time=False,
+                   translit=False, test=None, debug=False):
+        self._collect_data(numbers, message, from_name, ip_address, timestamp, ttl, day_time, translit, test, debug)
+        return await self._request("https://sms.ru", '/sms/send', self.data)
