@@ -1,4 +1,4 @@
-# smsru_python_api
+# sms ru api python
  Python API для сервиса отправки сообщений sms.ru
 
 # Установка
