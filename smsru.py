@@ -56,9 +56,10 @@ class SmsRu(ISmsRu):
 
     def send(self, numbers, message, from_name=None, ip_address=None, timestamp=None,
              ttl=None, day_time=False, translit=False, test=None, debug=False):
-        converted_ip = ipaddress.ip_address(ip_address)
-        if not (type(converted_ip) is ipaddress.IPv4Address or type(converted_ip) is ipaddress.IPv6Address):
-            raise ValueError('Неверно указан ip адрес')
+        if ip_address is not None:
+            converted_ip = ipaddress.ip_address(ip_address)
+            if not (type(converted_ip) is ipaddress.IPv4Address or type(converted_ip) is ipaddress.IPv6Address):
+                raise ValueError('Неверно указан ip адрес')
         if test is None:
             test = debug
         self.__debug_status = debug
