@@ -36,11 +36,9 @@ class ABCSmsRu:
     def data(self):
         return self._data
 
-    @staticmethod
     @abstractmethod
-    def _request(url, path, data):
+    def _request(self, path, data):
         """ Запрос на сревер
-            :param url: ссылка на сервер https://sms.ru
             :param path: путь для отправки данных
             :param data: данные для отправки на сервер
             :return response: Ответ от сервера """
@@ -112,10 +110,11 @@ class SmsRu(ABCSmsRu):
     def __init__(self, api_id):
         super().__init__(api_id)
 
-    @staticmethod
-    def _request(url, path, data):
+    def _request(self, path, data=None):
+        if data is None:
+            data = self.data
         encoded_data = parse.urlencode(data).encode()
-        req = request.Request(f'{url}{path}', data=encoded_data)
+        req = request.Request(f'https://sms.ru{path}', data=encoded_data)
         res = request.urlopen(req)
         return json.loads(res.read())
 
@@ -124,24 +123,34 @@ class SmsRu(ABCSmsRu):
              timestamp=None, ttl=None, day_time=False,
              translit=False, test=None, debug=False):
         self._collect_data(numbers, message, from_name, ip_address, timestamp, ttl, day_time, translit, test, debug)
-        return self._request("https://sms.ru", '/sms/send', self.data)
+        return self._request('/sms/send', self.data)
 
     def status(self, sms_id):
         self._data.update({'sms_id': sms_id})
-        return self._request("https://sms.ru", '/sms/status', self.data)
+        return self._request('/sms/status', self.data)
 
     def cost(self, numbers, message):
         self._collect_data(numbers, message, None, None, None, None, False, False, None, False)
-        return self._request("https://sms.ru", '/sms/cost', self.data)
+        return self._request('/sms/cost', self.data)
+
+    def balance(self):
+        return self._request('/my/balance')
+
+    def limit(self):
+        return self._request('/my/limit')
+
+    def senders(self):
+        return self._request('/my/senders')
 
 
 class AsyncSmsRu(ABCSmsRu):
     def __init__(self, api_id):
         super().__init__(api_id)
 
-    @staticmethod
-    async def _request(url, path, data):
-        async with aiohttp.ClientSession(url) as session:
+    async def _request(self, path, data=None):
+        if data is None:
+            data = self.data
+        async with aiohttp.ClientSession("https://sms.ru") as session:
             async with session.post(path, data=data) as res:
                 return await res.json()
 
@@ -150,12 +159,21 @@ class AsyncSmsRu(ABCSmsRu):
                    timestamp=None, ttl=None, day_time=False,
                    translit=False, test=None, debug=False):
         self._collect_data(numbers, message, from_name, ip_address, timestamp, ttl, day_time, translit, test, debug)
-        return await self._request("https://sms.ru", '/sms/send', self.data)
+        return await self._request('/sms/send', self.data)
 
     async def status(self, sms_id):
         self._data.update({'sms_id': sms_id})
-        return await self._request("https://sms.ru", '/sms/status', self.data)
+        return await self._request('/sms/status', self.data)
 
     async def cost(self, numbers, message):
         self._collect_data(numbers, message, None, None, None, None, False, False, None, False)
-        return await self._request("https://sms.ru", '/sms/cost', self.data)
+        return await self._request('/sms/cost', self.data)
+
+    async def balance(self):
+        return await self._request('/my/balance')
+
+    async def limit(self):
+        return await self._request('/my/limit')
+
+    async def senders(self):
+        return await self._request('/my/senders')
