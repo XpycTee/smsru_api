@@ -126,6 +126,10 @@ class SmsRu(ABCSmsRu):
         self._collect_data(numbers, message, from_name, ip_address, timestamp, ttl, day_time, translit, test, debug)
         return self._request("https://sms.ru", '/sms/send', self.data)
 
+    def status(self, sms_id):
+        self._data.update({'sms_id': sms_id})
+        return self._request("https://sms.ru", '/sms/status', self.data)
+
 
 class AsyncSmsRu(ABCSmsRu):
     def __init__(self, api_id):
@@ -143,3 +147,7 @@ class AsyncSmsRu(ABCSmsRu):
                    translit=False, test=None, debug=False):
         self._collect_data(numbers, message, from_name, ip_address, timestamp, ttl, day_time, translit, test, debug)
         return await self._request("https://sms.ru", '/sms/send', self.data)
+
+    async def status(self, sms_id):
+        self._data.update({'sms_id': sms_id})
+        return await self._request("https://sms.ru", '/sms/status', self.data)
