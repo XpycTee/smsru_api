@@ -11,12 +11,13 @@
 Чтобы использовать скрипт просто импортируйте его в свой код
 
 ```python
-import smsru
+
+from smsru_api import smsru
 ```
 или импортируйте сам класс `SmsRu()`
 
 ```python
-from smsru import SmsRu
+from smsru_api.smsru import SmsRu
 ```
 Классу `SmsRu()` в параметры нужно передать ваша API ключ из личного кабинета
 Метод `send()` отправляет ваше сообщение на номер(а) через `sms.ru`
@@ -24,7 +25,7 @@ from smsru import SmsRu
 Для асинхронной работы есть класс `AsyncSmsRu()`
 
 ```python
-from smsru import SmsRu, AsyncSmsRu
+from smsru_api.smsru import SmsRu, AsyncSmsRu
 
 sms_ru = SmsRu('Your API KEY')
 async_sms_ru = AsyncSmsRu('Your API KEY')
