@@ -18,12 +18,16 @@ from smsru import SmsRu
 Классу `SmsRu()` в параметры нужно передать ваша API ключ из личного кабинета
 Метод `send()` отправляет ваше сообщение на номер(а) через `sms.ru`
 
+Для асинхронной работы есть класс `AsyncSmsRu()`
+
 ```python
-from smsru import SmsRu
+from smsru import SmsRu, AsyncSmsRu
 
 sms_ru = SmsRu('Your API KEY')
+async_sms_ru = AsyncSmsRu('Your API KEY')
 
 response = sms_ru.send(['9XXXXXXXXX'], 'Message to sms')
+async_response = asyncio.run(async_sms_ru.send(['9XXXXXXXXX'], 'Message to sms'))
 
 ### response:
 # {
