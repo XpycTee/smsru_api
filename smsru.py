@@ -130,6 +130,10 @@ class SmsRu(ABCSmsRu):
         self._data.update({'sms_id': sms_id})
         return self._request("https://sms.ru", '/sms/status', self.data)
 
+    def cost(self, numbers, message):
+        self._collect_data(numbers, message, None, None, None, None, False, False, None, False)
+        return self._request("https://sms.ru", '/sms/cost', self.data)
+
 
 class AsyncSmsRu(ABCSmsRu):
     def __init__(self, api_id):
@@ -151,3 +155,7 @@ class AsyncSmsRu(ABCSmsRu):
     async def status(self, sms_id):
         self._data.update({'sms_id': sms_id})
         return await self._request("https://sms.ru", '/sms/status', self.data)
+
+    async def cost(self, numbers, message):
+        self._collect_data(numbers, message, None, None, None, None, False, False, None, False)
+        return await self._request("https://sms.ru", '/sms/cost', self.data)
