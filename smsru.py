@@ -142,6 +142,17 @@ class SmsRu(ABCSmsRu):
     def senders(self):
         return self._request('/my/senders')
 
+    def stop_list(self):
+        return self._request('/stoplist/get')
+
+    def add_stop_list(self, number, comment=""):
+        self._data.update({'stoplist_phone': re.sub(r'^(\+?7|8)|\D', '', number), 'stoplist_text': comment})
+        return self._request('/stoplist/add', self.data)
+
+    def del_stop_list(self, number):
+        self._data.update({'stoplist_phone': re.sub(r'^(\+?7|8)|\D', '', number)})
+        return self._request('/stoplist/del', self.data)
+
 
 class AsyncSmsRu(ABCSmsRu):
     def __init__(self, api_id):
@@ -177,3 +188,14 @@ class AsyncSmsRu(ABCSmsRu):
 
     async def senders(self):
         return await self._request('/my/senders')
+
+    async def stop_list(self):
+        return await self._request('/stoplist/get')
+
+    async def add_stop_list(self, number, comment=""):
+        self._data.update({'stoplist_phone': re.sub(r'^(\+?7|8)|\D', '', number), 'stoplist_text': comment})
+        return await self._request('/stoplist/add', self.data)
+
+    async def del_stop_list(self, number):
+        self._data.update({'stoplist_phone': re.sub(r'^(\+?7|8)|\D', '', number)})
+        return await self._request('/stoplist/del', self.data)
