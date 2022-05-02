@@ -5,25 +5,28 @@
 Для устнавоки достаточно скачать или клонировать данный скрипт и сохранить в удомном месте для доступа к нему
 
 # Использование
-Чтобы использовать скрипт просто импортируйте его в свой код 
+Чтобы использовать скрипт просто импортируйте его в свой код
+
 ```python
-import sms
+import smsru
 ```
 или импортируйте сам класс `SmsRu()`
+
 ```python
-from sms import SmsRu
+from smsru import SmsRu
 ```
 Классу `SmsRu()` в параметры нужно передать ваша API ключ из личного кабинета
 Метод `send()` отправляет ваше сообщение на номер(а) через `sms.ru`
+
 ```python
-from sms import SmsRu
+from smsru import SmsRu
 
 sms_ru = SmsRu('Your API KEY')
 
 response = sms_ru.send(['9XXXXXXXXX'], 'Message to sms')
 
 ### response:
-#{
+# {
 #    "status": "OK", // Запрос выполнен успешно (нет ошибок в авторизации, проблем с отправителем, итд...)
 #    "status_code": 100, // Успешный код выполнения
 #    "sms": {
@@ -39,7 +42,7 @@ response = sms_ru.send(['9XXXXXXXXX'], 'Message to sms')
 #        }
 #    } ,
 #    "balance": XXXX.XX // Ваш баланс после отправки
-#}
+# }
 
 ```
 Метод возврощает `JSON` ответ полученый от `sms.ru`

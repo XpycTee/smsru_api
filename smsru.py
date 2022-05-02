@@ -4,6 +4,7 @@ from urllib import parse
 import time
 import re
 import json
+import ipaddress
 
 
 class OutOfPhoneNumbers(Exception):
@@ -17,6 +18,7 @@ class OutOfTimestamp(Exception):
 class ISmsRu:
     """ SMS.RU API class
             :param api_id: Ваш API ключ на главной странице личного кабинета """
+
     def __init__(self, api_id):
         self.__debug_status = False
         self.api_id = api_id
@@ -27,8 +29,8 @@ class ISmsRu:
         if self.__debug_status:
             print('Debug:', message)
 
-    def send(self, numbers: list, message, from_name=None, ip_address=None, timestamp=None,
-             ttl=None, day_time=False, translit=False, test=None, debug=False):
+    def send(self, numbers: list, message: str, from_name: str, ip_address: str, timestamp: int,
+             ttl: int, day_time: bool, translit: bool, test: bool, debug: bool):
         """ Отправка сообщения на сервер SMS.RU
                 :param numbers: Номер телефона получателя (либо несколько номеров до
                 100 штук за один запрос). Номер телефона для отправки сообщения, желатьельно без кода страны. Возможно
@@ -52,10 +54,10 @@ class SmsRu(ISmsRu):
     def __init__(self, api_id):
         super().__init__(api_id)
 
-    def send(self, numbers: list, message: str, from_name=None, ip_address=None, timestamp=None,
-             ttl=None, day_time=False, translit=False, test: bool = None, debug=False):
-        ip_regex = re.compile(r'^((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.){3}(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]?)$')
-        if ip_address is not None and not ip_regex.fullmatch(ip_address):
+    def send(self, numbers, message, from_name=None, ip_address=None, timestamp=None,
+             ttl=None, day_time=False, translit=False, test=None, debug=False):
+        converted_ip = ipaddress.ip_address(ip_address)
+        if not (type(converted_ip) is ipaddress.IPv4Address or type(converted_ip) is ipaddress.IPv6Address):
             raise ValueError('Неверно указан ip адрес')
         if test is None:
             test = debug
@@ -79,23 +81,23 @@ class SmsRu(ISmsRu):
         url = f"http://sms.ru/sms/send?api_id={self.api_id}{to_numbers}&text={url_message}&partner_id=358434&json=1"
         if test:
             url = "%s&test=1" % url
-        elif from_name is not None:
+        if from_name is not None:
             url = "%s&from=%s" % (url, from_name)
-        elif timestamp is not None:
+        if timestamp is not None:
             if int(time.time()) - timestamp > 5184000:
                 raise OutOfTimestamp('Задержка сообщения не может быть больше 60 дней')
             url = "%s&time=%d" % (url, int(timestamp))
-        elif ttl is not None:
+        if ttl is not None:
             if ttl > 1440:
                 raise OutOfTimestamp('TTL не может быть больше 1440 минут')
             elif ttl < 1:
                 raise OutOfTimestamp('TTL не может быть меньше 1 минуты')
             url = "%s&ttl=%d" % (url, int(ttl))
-        elif day_time:
+        if day_time:
             url = "%s&daytime=1" % url
-        elif ip_address is not None:
-            url = "%s&ip=%d" % (url, ip_address)
-        elif translit:
+        if ip_address is not None:
+            url = "%s&ip=%s" % (url, ip_address)
+        if translit:
             url = '%s&translit=1' % url
         req = request.Request(url, data=data.encode())
         res = request.urlopen(req)
