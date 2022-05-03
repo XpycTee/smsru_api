@@ -152,13 +152,15 @@ response = sms_ru.balance()
 # }
 ```
 # Узнать лимит
-Метод `limit()` запрашивает у сервера лимты по отправке СМС
+Метод `limit()` запрашивает у сервера лимты по отправке СМС \
+Метод `free()` запрашивает у сервера беспатные лимты по отправке СМС
 ```python
 from smsru_api import SmsRu
 
 sms_ru = SmsRu('Your API KEY')
 
 response = sms_ru.limit()
+free_response = sms_ru.free()
 
 ### response:
 # {
@@ -166,6 +168,13 @@ response = sms_ru.limit()
 #    "status_code": 100, // Успешный код выполнения
 #    "total_limit": 5000,
 #    "used_today": 50
+# }
+### free_response:
+# {
+#    "status": "OK", // Запрос выполнен успешно (нет ошибок в авторизации, проблем с отправителем, итд...)
+#    "status_code": 100, // Успешный код выполнения
+#    "total_free": 5,
+#    "used_today": None
 # }
 ```
 # Получить одобренных отправителей

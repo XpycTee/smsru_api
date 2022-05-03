@@ -112,6 +112,13 @@ class ABCSmsRu:
         pass
 
     @abstractmethod
+    def free(self):
+        """ Узнать бесплатный лимит
+
+            :return: JSON ответ от сервера """
+        pass
+
+    @abstractmethod
     def senders(self):
         """ Получить одобренных отправителей
 
@@ -220,6 +227,9 @@ class SmsRu(ABCSmsRu):
     def limit(self):
         return self._request('/my/limit')
 
+    def free(self):
+        return self._request('/my/free')
+
     def senders(self):
         return self._request('/my/senders')
 
@@ -270,6 +280,9 @@ class AsyncSmsRu(ABCSmsRu):
 
     async def limit(self):
         return await self._request('/my/limit')
+
+    async def free(self):
+        return await self._request('/my/free')
 
     async def senders(self):
         return await self._request('/my/senders')
