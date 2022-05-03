@@ -14,10 +14,13 @@ import smsru_api
 from smsru_api import SmsRu
 ```
 Для асинхронной работы есть класс `AsyncSmsRu()`
+
 ```python
 from smsru_api import AsyncSmsRu
 ```
-Классам `SmsRu()` или `AsyncSmsRu()` в параметры нужно передать ваша API ключ из личного кабинета
+Все методы асинхронного класса это корутины.
+
+Классам `SmsRu()` или `AsyncSmsRu()` в параметры нужно передать ваш API ключ из личного кабинета
 ```python
 from smsru_api import SmsRu, AsyncSmsRu
 
@@ -27,14 +30,11 @@ async_sms_ru = AsyncSmsRu('Your API KEY')
 # Отправка сообщений
 Метод `send()` отправляет ваше сообщение на номер(а) через `sms.ru`
 ```python
-from smsru_api import SmsRu, AsyncSmsRu
-import asyncio
+from smsru_api import SmsRu
 
 sms_ru = SmsRu('Your API KEY')
-async_sms_ru = AsyncSmsRu('Your API KEY')
 
 response = sms_ru.send(['9XXXXXXXXX'], 'Message to sms')
-async_response = asyncio.run(async_sms_ru.send(['9XXXXXXXXX'], 'Message to sms'))
 
 ### response:
 # {
@@ -68,17 +68,32 @@ day_time| - | Учитывает часовой пояс получателя. �
 test| - | Имитирует отправку сообщения для тестирования. True или False
 translit| - | Переводит все русские символы в латинские.
 debug| - | Включает режим отладки. Все собщения отправляются с парпметром test: True если он не указан в ручную
+# Отправить четырехзначный авторизационный код звонком
+Метод `call()` отправляет запрос на звонок по указанному номеру
+```python
+from smsru_api import SmsRu
+
+sms_ru = SmsRu('Your API KEY')
+
+response = sms_ru.call('9XXXXXXXXX')
+
+### response:
+# {
+#     "status": "OK", // Запрос выполнен успешно (нет ошибок в авторизации, проблем с отправителем, итд...)
+#     "code": "1435", // Последние 4 цифры номера, с которого мы совершим звонок пользователю
+#     "call_id": "000000-10000000", // ID звонка
+#     "cost": 0.4, // Стоимость звонка
+#     "balance": XXXX.XX // Ваш баланс после совершения звонка
+# }
+```
 # Получить статус отправленных сообщений
 Метод `status()` узнает статус СМС по его `sms_id`
 ```python
-from smsru_api import SmsRu, AsyncSmsRu
-import asyncio
+from smsru_api import SmsRu
 
 sms_ru = SmsRu('Your API KEY')
-async_sms_ru = AsyncSmsRu('Your API KEY')
 
 response = sms_ru.status('1000-100000')
-async_response = asyncio.run(async_sms_ru.status('1000-100000'))
 
 ### response:
 # {
@@ -98,14 +113,11 @@ async_response = asyncio.run(async_sms_ru.status('1000-100000'))
 # Узнать стоимость СМС сообщений
 Метод `cost()` запрашивает у сервера стоимость СМС
 ```python
-from smsru_api import SmsRu, AsyncSmsRu
-import asyncio
+from smsru_api import SmsRu
 
 sms_ru = SmsRu('Your API KEY')
-async_sms_ru = AsyncSmsRu('Your API KEY')
 
 response = sms_ru.cost(['9XXXXXXXXX'], 'Message to sms')
-async_response = asyncio.run(async_sms_ru.status(['9XXXXXXXXX'], 'Message to sms'))
 
 ### response:
 # {
@@ -126,14 +138,11 @@ async_response = asyncio.run(async_sms_ru.status(['9XXXXXXXXX'], 'Message to sms
 # Узнать баланс
 Метод `balance()` запрашивает у сервера баланс аккаунта
 ```python
-from smsru_api import SmsRu, AsyncSmsRu
-import asyncio
+from smsru_api import SmsRu
 
 sms_ru = SmsRu('Your API KEY')
-async_sms_ru = AsyncSmsRu('Your API KEY')
 
 response = sms_ru.balance()
-async_response = asyncio.run(async_sms_ru.balance())
 
 ### response:
 # {
@@ -145,14 +154,11 @@ async_response = asyncio.run(async_sms_ru.balance())
 # Узнать лимит
 Метод `limit()` запрашивает у сервера лимты по отправке СМС
 ```python
-from smsru_api import SmsRu, AsyncSmsRu
-import asyncio
+from smsru_api import SmsRu
 
 sms_ru = SmsRu('Your API KEY')
-async_sms_ru = AsyncSmsRu('Your API KEY')
 
 response = sms_ru.limit()
-async_response = asyncio.run(async_sms_ru.limit())
 
 ### response:
 # {
@@ -165,14 +171,11 @@ async_response = asyncio.run(async_sms_ru.limit())
 # Получить одобренных отправителей
 Метод `senders()` запрашивает у сервера отправителей
 ```python
-from smsru_api import SmsRu, AsyncSmsRu
-import asyncio
+from smsru_api import SmsRu
 
 sms_ru = SmsRu('Your API KEY')
-async_sms_ru = AsyncSmsRu('Your API KEY')
 
 response = sms_ru.senders()
-async_response = asyncio.run(async_sms_ru.senders())
 
 ### response:
 # {
@@ -184,14 +187,10 @@ async_response = asyncio.run(async_sms_ru.senders())
 # Добавить номер в стоплист
 Метод `add_stop_list()` добавляет номер в стоп лист
 ```python
-from smsru_api import SmsRu, AsyncSmsRu
-import asyncio
-
+from smsru_api import SmsRu
 sms_ru = SmsRu('Your API KEY')
-async_sms_ru = AsyncSmsRu('Your API KEY')
 
 response = sms_ru.add_stop_list('9XXXXXXXXX', 'Comment')
-async_response = asyncio.run(async_sms_ru.add_stop_list('9XXXXXXXXX', 'Comment'))
 
 ### response:
 # {
@@ -202,14 +201,10 @@ async_response = asyncio.run(async_sms_ru.add_stop_list('9XXXXXXXXX', 'Comment')
 # Удалить номер из стоплиста
 Метод `del_stop_list()` удаляет номер из стоп листа
 ```python
-from smsru_api import SmsRu, AsyncSmsRu
-import asyncio
-
+from smsru_api import SmsRu
 sms_ru = SmsRu('Your API KEY')
-async_sms_ru = AsyncSmsRu('Your API KEY')
 
 response = sms_ru.del_stop_list('9XXXXXXXXX')
-async_response = asyncio.run(async_sms_ru.del_stop_list('9XXXXXXXXX'))
 
 ### response:
 # {
@@ -220,14 +215,10 @@ async_response = asyncio.run(async_sms_ru.del_stop_list('9XXXXXXXXX'))
 # Получить список номеров в стоплисте
 Метод `stop_list()` получает список номеров в стоп листе
 ```python
-from smsru_api import SmsRu, AsyncSmsRu
-import asyncio
-
+from smsru_api import SmsRu
 sms_ru = SmsRu('Your API KEY')
-async_sms_ru = AsyncSmsRu('Your API KEY')
 
 response = sms_ru.stop_list()
-async_response = asyncio.run(async_sms_ru.stop_list())
 
 ### response:
 # {

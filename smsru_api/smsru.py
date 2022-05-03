@@ -69,6 +69,16 @@ class ABCSmsRu:
         pass
 
     @abstractmethod
+    def call(self, number: str, ip_address: str):
+        """ Отправить четырехзначный авторизационный код звонком
+
+            :param number: Номер телефона получателя. Номер телефона для отправки сообщения, желатьельно без кода страны.
+                Возможно исполльзования и других видов, скрипт удалит все не нужное.
+            :param ip_address: [Опционально] В этом параметре вы можете передать нам  IP адрес вашего пользователя.
+            :return: JSON ответ от сервера """
+        pass
+
+    @abstractmethod
     def status(self, sms_id: str):
         """ Получение стстуса СМС по id
 
@@ -192,6 +202,10 @@ class SmsRu(ABCSmsRu):
         self._collect_data(numbers, message, from_name, ip_address, timestamp, ttl, day_time, translit, test, debug)
         return self._request('/sms/send', self.data)
 
+    def call(self, number, ip_address=None):
+        self._data.update({'phone': re.sub(r'^(\+?7|8)|\D', '', number)})
+        return self._request('/code/call', self.data)
+
     def status(self, sms_id):
         self._data.update({'sms_id': sms_id})
         return self._request('/sms/status', self.data)
@@ -238,6 +252,10 @@ class AsyncSmsRu(ABCSmsRu):
                    translit=False, test=None, debug=False):
         self._collect_data(numbers, message, from_name, ip_address, timestamp, ttl, day_time, translit, test, debug)
         return await self._request('/sms/send', self.data)
+
+    async def call(self, number, ip_address=None):
+        self._data.update({'phone': re.sub(r'^(\+?7|8)|\D', '', number)})
+        return await self._request('/code/call', self.data)
 
     async def status(self, sms_id):
         self._data.update({'sms_id': sms_id})
