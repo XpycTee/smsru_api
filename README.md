@@ -239,3 +239,56 @@ response = sms_ru.stop_list()
 #    }
 # }
 ```
+# Добавить webhook
+Метод `add_callback()` добавляет webhook (callback) на аккаунт
+```python
+from smsru_api import SmsRu
+sms_ru = SmsRu('Your API KEY')
+
+response = sms_ru.add_callback('https://campany.com/callback')
+
+### response:
+# {
+#    "status": "OK", // Запрос выполнен успешно (нет ошибок в авторизации, проблем с отправителем, итд...)
+#    "status_code": 100, // Успешный код выполнения
+#    "callback": [ // Список добавленных callback
+#         "https://campany.com/callback", // первый сайт
+#         "http://anothersite.ru/callback/index.php" // второй сайт
+#    ]
+# }
+```
+# Удалить webhook
+Метод `del_callback()` удаляет webhook (callback) из аккаунта
+```python
+from smsru_api import SmsRu
+sms_ru = SmsRu('Your API KEY')
+
+response = sms_ru.del_callback('https://campany.com/callback')
+
+### response:
+# {
+#    "status": "OK", // Запрос выполнен успешно (нет ошибок в авторизации, проблем с отправителем, итд...)
+#    "status_code": 100, // Успешный код выполнения
+#    "callback": [ // Список добавленных callback
+#         "http://anothersite.ru/callback/index.php"
+#    ]
+# }
+```
+# Получить список вебхуков (callbacks)
+Метод `callbacks()` получает список вебхуков (callbacks)
+```python
+from smsru_api import SmsRu
+sms_ru = SmsRu('Your API KEY')
+
+response = sms_ru.callbacks()
+
+### response:
+# {
+#    "status": "OK", // Запрос выполнен успешно (нет ошибок в авторизации, проблем с отправителем, итд...)
+#    "status_code": 100, // Успешный код выполнения
+#    "callback": [ // Список добавленных callback
+#         "https://campany.com/callback", // первый сайт
+#         "http://anothersite.ru/callback/index.php" // второй сайт
+#    ]
+# }
+```

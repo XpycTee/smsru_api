@@ -149,6 +149,29 @@ class ABCSmsRu:
             :return: JSON ответ от сервера """
         pass
 
+    @abstractmethod
+    def callbacks(self):
+        """ Получить список вебхуков (callbacks)
+
+            :return: JSON ответ от сервера """
+        pass
+
+    @abstractmethod
+    def add_callback(self, url: str):
+        """ Добавить webhook/callback
+
+            :param url: Адерес webhook
+            :return: JSON ответ от сервера """
+        pass
+
+    @abstractmethod
+    def del_callback(self, url: str):
+        """ Удалить webhook/callback
+
+            :param url: Адерес webhook
+            :return: JSON ответ от сервера """
+        pass
+
     def _collect_data(self, numbers, message,
                       from_name, ip_address,
                       timestamp, ttl, day_time,
@@ -244,6 +267,17 @@ class SmsRu(ABCSmsRu):
         self._data.update({'stoplist_phone': re.sub(r'^(\+?7|8)|\D', '', number)})
         return self._request('/stoplist/del', self.data)
 
+    def callbacks(self):
+        return self._request('/callback/get')
+
+    def add_callback(self, url):
+        self._data.update({'url': url})
+        return self._request('/callback/add', self.data)
+
+    def del_callback(self, url):
+        self._data.update({'url': url})
+        return self._request('/callback/del', self.data)
+
 
 class AsyncSmsRu(ABCSmsRu):
     def __init__(self, api_id):
@@ -297,3 +331,14 @@ class AsyncSmsRu(ABCSmsRu):
     async def del_stop_list(self, number):
         self._data.update({'stoplist_phone': re.sub(r'^(\+?7|8)|\D', '', number)})
         return await self._request('/stoplist/del', self.data)
+
+    async def callbacks(self):
+        return await self._request('/callback/get')
+
+    async def add_callback(self, url):
+        self._data.update({'url': url})
+        return await self._request('/callback/add', self.data)
+
+    async def del_callback(self, url):
+        self._data.update({'url': url})
+        return await self._request('/callback/del', self.data)
