@@ -11,7 +11,7 @@ def requirements():
 
 
 setup(name='smsru_api',
-      version='0.1.1',
+      version='0.1.2',
       description='Python API для сервиса отправки сообщений sms.ru',
       url="https://git.xpyctee.ru/XpycTee/SmsRU_API",
       long_description=readme,
