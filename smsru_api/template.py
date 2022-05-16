@@ -43,7 +43,7 @@ class ABCSmsRu:
         pass
 
     @abstractmethod
-    def send(self, numbers: list[str], message: str, from_name: str, ip_address: str, timestamp: int,
+    def send(self, *numbers: str, message: str, from_name: str, ip_address: str, timestamp: int,
              ttl: int, day_time: bool, translit: bool, test: bool, debug: bool) -> dict:
         """ Отправка сообщения на сервер SMS.RU
 
@@ -83,7 +83,7 @@ class ABCSmsRu:
         pass
 
     @abstractmethod
-    def cost(self, numbers: list[str], message: str) -> dict:
+    def cost(self, *numbers: str, message: str) -> dict:
         """ Получение стоимости смс
 
              :param numbers: Номер телефона получателя (либо несколько номеров до
@@ -168,7 +168,7 @@ class ABCSmsRu:
             :return: JSON ответ от сервера """
         pass
 
-    def _collect_data(self, numbers: list[str], message: str,
+    def _collect_data(self, numbers: tuple[str], message: str,
                       from_name: str = None, ip_address: str = None,
                       timestamp: int = None, ttl: int = None, day_time: bool = False,
                       translit: bool = False, test: bool = None, debug: bool = False):

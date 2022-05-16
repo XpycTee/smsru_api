@@ -8,7 +8,7 @@ with open("README.md", "r", encoding='UTF-8') as f:
 requirements = ['aiohttp~=3.8.1']
 
 setup(name='smsru_api',
-      version='0.1.3',
+      version='0.1.4',
       description='Python API для сервиса отправки сообщений sms.ru',
       url="https://git.xpyctee.ru/XpycTee/SmsRU_API",
       long_description=readme,

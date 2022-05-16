@@ -21,7 +21,7 @@ class SmsRu(template.ABCSmsRu):
         res = request.urlopen(req)
         return json.loads(res.read())
 
-    def send(self, numbers, message,
+    def send(self, *numbers, message,
              from_name=None, ip_address=None,
              timestamp=None, ttl=None, day_time=False,
              translit=False, test=None, debug=False):
@@ -41,7 +41,7 @@ class SmsRu(template.ABCSmsRu):
         self._data.update({'sms_id': sms_id})
         return self._request('/sms/status', self.data)
 
-    def cost(self, numbers, message):
+    def cost(self, *numbers, message):
         self._collect_data(numbers, message)
         return self._request('/sms/cost', self.data)
 

@@ -34,19 +34,19 @@ from smsru_api import SmsRu
 
 sms_ru = SmsRu('Your API KEY')
 
-response = sms_ru.send(['9XXXXXXXXX'], 'Message to sms')
+response = sms_ru.send('9XXXXXXXX0', '9XXXXXXXX1', message='Message to sms')
 
 ### response:
 # {
 #    "status": "OK", // Запрос выполнен успешно (нет ошибок в авторизации, проблем с отправителем, итд...)
 #    "status_code": 100, // Успешный код выполнения
 #    "sms": {
-#        "79XXXXXXXXX": {
+#        "79XXXXXXXX0": {
 #            "status": "OK", // Возможные варианты: OK или ERROR.
 #            "status_code": 100, // Успешный код выполнения, сообщение принято на отправку
 #            "sms_id": "000000-10000000" // ID сообщения
 #        },
-#        "79XXXXXXXXX": {
+#        "79XXXXXXXX1": {
 #            "status": "ERROR",
 #            "status_code": 207, // Код ошибки
 #            "status_text": "На этот номер (или один из номеров) нельзя отправлять сообщения, либо указано более 100 номеров в списке получателей" // Описание ошибки
@@ -115,7 +115,7 @@ from smsru_api import SmsRu
 
 sms_ru = SmsRu('Your API KEY')
 
-response = sms_ru.cost(['9XXXXXXXXX'], 'Message to sms')
+response = sms_ru.cost('9XXXXXXXX0', '9XXXXXXXX1', message='Message to sms')
 
 ### response:
 # {
