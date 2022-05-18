@@ -91,7 +91,7 @@ class AsyncSmsRu(template.ABCSmsRu):
             async with session.post(path, data=data) as res:
                 return await res.json()
 
-    async def send(self, numbers, message,
+    async def send(self, *numbers, message,
                    from_name=None, ip_address=None,
                    timestamp=None, ttl=None, day_time=False,
                    translit=False, test=None, debug=False):
@@ -111,7 +111,7 @@ class AsyncSmsRu(template.ABCSmsRu):
         self._data.update({'sms_id': sms_id})
         return await self._request('/sms/status', self.data)
 
-    async def cost(self, numbers, message):
+    async def cost(self, *numbers, message):
         self._collect_data(numbers, message)
         return await self._request('/sms/cost', self.data)
 
