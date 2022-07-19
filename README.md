@@ -65,7 +65,7 @@ response = sms_ru.send('9XXXXXXXX0', '9XXXXXXXX1', message='Message to sms')
 `day_time` Учитывает часовой пояс получателя. Если указан этот параметр, то параметр time игнорируется.\
 `test` Имитирует отправку сообщения для тестирования. True или False\
 `translit` Переводит все русские символы в латинские.\
-`debug` Включает режим отладки. Все сообщения отправляются с параметром test: True если он не указан в ручную\
+`debug` Включает режим отладки. Все сообщения отправляются с параметром test: True если он не указан в ручную \
 # Отправить четырехзначный авторизационный код звонком
 Метод `call()` отправляет запрос на звонок по указанному номеру
 ```python
@@ -237,8 +237,8 @@ response = sms_ru.stop_list()
 #    }
 # }
 ```
-# Добавить webhook
-Метод `add_callback()` добавляет webhook (callback) на аккаунт
+# Добавить callback (webhook)
+Метод `add_callback()` добавляет callback (webhook) на аккаунт
 ```python
 from smsru_api import SmsRu
 sms_ru = SmsRu('Your API KEY')
@@ -255,8 +255,8 @@ response = sms_ru.add_callback('https://campany.com/callback')
 #    ]
 # }
 ```
-# Удалить webhook
-Метод `del_callback()` удаляет webhook (callback) из аккаунта
+# Удалить callback (webhook)
+Метод `del_callback()` удаляет callback (webhook) из аккаунта
 ```python
 from smsru_api import SmsRu
 sms_ru = SmsRu('Your API KEY')
@@ -272,8 +272,8 @@ response = sms_ru.del_callback('https://campany.com/callback')
 #    ]
 # }
 ```
-# Получить список вебхуков (callbacks)
-Метод `callbacks()` получает список вебхуков (callbacks)
+# Получить список callbacks (webhooks)
+Метод `callbacks()` получает список callbacks (webhooks)
 ```python
 from smsru_api import SmsRu
 sms_ru = SmsRu('Your API KEY')
