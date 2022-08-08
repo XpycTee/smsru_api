@@ -8,12 +8,12 @@ with open("README.md", "r", encoding='UTF-8') as f:
 requirements = ['aiohttp~=3.8.1']
 
 setup(name='smsru_api',
-      version='0.1.4',
+      version='0.1.6',
       description='Python API для сервиса отправки сообщений sms.ru',
       url="https://git.xpyctee.ru/XpycTee/SmsRU_API",
       long_description=readme,
       long_description_content_type="text/markdown",
-      license='GNU General Public License v3.0',
+      license='Apache License 2.0',
       packages=find_packages(),
       author="XpycTee",
       author_email='i@xpyctee.ru',
