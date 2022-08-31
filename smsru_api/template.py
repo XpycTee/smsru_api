@@ -168,7 +168,7 @@ class ABCSmsRu:
             :return: JSON ответ от сервера. """
         pass
 
-    def _collect_data(self, numbers: tuple[str], message: str,
+    def _collect_data(self, numbers: tuple, message: str,
                       from_name: str = None, ip_address: str = None,
                       timestamp: int = None, ttl: int = None, day_time: bool = False,
                       translit: bool = False, test: bool = None, debug: bool = False):
