@@ -33,7 +33,7 @@ class SmsRu(template.ABCSmsRu):
         if ip_address is not None:
             converted_ip = ipaddress.ip_address(ip_address)
             if not (type(converted_ip) is ipaddress.IPv4Address or type(converted_ip) is ipaddress.IPv6Address):
-                raise ValueError('Неверно указан ip адрес')
+                raise ValueError('Неверно указан ip адрес.')
             self._data.update({'ip': ip_address})
         return self._request('/code/call', self.data)
 
@@ -103,7 +103,7 @@ class AsyncSmsRu(template.ABCSmsRu):
         if ip_address is not None:
             converted_ip = ipaddress.ip_address(ip_address)
             if not (type(converted_ip) is ipaddress.IPv4Address or type(converted_ip) is ipaddress.IPv6Address):
-                raise ValueError('Неверно указан ip адрес')
+                raise ValueError('Неверно указан ip адрес.')
             self._data.update({'ip': ip_address})
         return await self._request('/code/call', self.data)
 

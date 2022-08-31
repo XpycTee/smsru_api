@@ -15,9 +15,9 @@ class OutOfTimestamp(Exception):
 
 
 class ABCSmsRu:
-    """ SMS.RU API class
+    """ SMS.RU API class.
 
-        :param api_id: Ваш API ключ на главной странице личного кабинета """
+        :param api_id: Ваш API ключ на главной странице личного кабинета. """
     __metaclass__ = ABCMeta
 
     def __init__(self, api_id: str):
@@ -35,24 +35,24 @@ class ABCSmsRu:
 
     @abstractmethod
     def _request(self, path: str, data: dict) -> dict:
-        """ Запрос на сервер
+        """ Запрос на сервер.
 
-            :param path: путь для отправки данных
-            :param data: данные для отправки на сервер
-            :return: JSON ответ от сервера """
+            :param path: путь для отправки данных.
+            :param data: данные для отправки на сервер.
+            :return: JSON ответ от сервера. """
         pass
 
     @abstractmethod
     def send(self, *numbers: str, message: str, from_name: str, ip_address: str, timestamp: int,
              ttl: int, day_time: bool, translit: bool, test: bool, debug: bool) -> dict:
-        """ Отправка сообщения на сервер SMS.RU
+        """ Отправка сообщения на сервер SMS.RU.
 
             :param numbers: Номер телефона получателя (либо несколько номеров до
                 100 штук за один запрос). Номер телефона для отправки сообщения, желательно без кода страны. Возможно
                 использования и других видов, скрипт удалит все не нужное.
-            :param message: Текст сообщения в кодировке UTF-8 .
+            :param message: Текст сообщения в кодировке UTF-8.
             :param from_name: [Опционально] Имя отправителя (должно быть согласовано с администрацией).
-            :param ip_address: [Опционально] В этом параметре вы можете передать нам  IP адрес вашего пользователя.
+            :param ip_address: [Опционально] В этом параметре вы можете передать нам IP адрес вашего пользователя.
             :param timestamp: [Опционально] Время отложенной отправки.
             :param ttl: [Опционально] Срок жизни сообщения в минутах (от 1 до 1440).
             :param day_time: [Опционально] Учитывает часовой пояс получателя. Если указан этот параметр,
@@ -60,112 +60,112 @@ class ABCSmsRu:
             :param test: [Опционально] Имитирует отправку сообщения для тестирования. True или False
             :param translit: [Опционально] Переводит все русские символы в латинские.
             :param debug: [Опционально] Включает режим отладки. Все сообщения отправляются с параметром test: True
-                если он не указан в ручную
-            :return: JSON ответ от сервера """
+                если он не указан вручную.
+            :return: JSON ответ от сервера. """
         pass
 
     @abstractmethod
     def call(self, number: str, ip_address: str) -> dict:
-        """ Отправить четырехзначный авторизационный код звонком
+        """ Отправить четырехзначный авторизационный код звонком.
 
             :param number: Номер телефона получателя. Номер телефона для отправки сообщения, желательно без кода страны.
                 Возможно использования и других видов, скрипт удалит все не нужное.
-            :param ip_address: [Опционально] В этом параметре вы можете передать нам  IP адрес вашего пользователя.
-            :return: JSON ответ от сервера """
+            :param ip_address: [Опционально]. В этом параметре вы можете передать нам IP адрес вашего пользователя.
+            :return: JSON ответ от сервера. """
         pass
 
     @abstractmethod
     def status(self, sms_id: str) -> dict:
-        """ Получение статуса СМС по id
+        """ Получение статуса СМС по id.
 
-            :param sms_id: id СМС в системе sms.ru
-            :return: JSON ответ от сервера """
+            :param sms_id: id СМС в системе sms.ru.
+            :return: JSON ответ от сервера. """
         pass
 
     @abstractmethod
     def cost(self, *numbers: str, message: str) -> dict:
-        """ Получение стоимости смс
+        """ Получение стоимости смс.
 
              :param numbers: Номер телефона получателя (либо несколько номеров до
                 100 штук за один запрос). Номер телефона для отправки сообщения, желательно без кода страны. Возможно
                 использования и других видов, скрипт удалит все не нужное.
-            :param message: Текст сообщения в кодировке UTF-8 .
-            :return: JSON ответ от сервера """
+            :param message: Текст сообщения в кодировке UTF-8.
+            :return: JSON ответ от сервера. """
         pass
 
     @abstractmethod
     def balance(self) -> dict:
-        """ Получение баланса аккаунта
+        """ Получение баланса аккаунта.
 
-            :return: JSON ответ от сервера """
+            :return: JSON ответ от сервера. """
         pass
 
     @abstractmethod
     def limit(self) -> dict:
-        """ Узнать лимит
+        """ Узнать лимит.
 
-            :return: JSON ответ от сервера """
+            :return: JSON ответ от сервера. """
         pass
 
     @abstractmethod
     def free(self) -> dict:
-        """ Узнать бесплатный лимит
+        """ Узнать бесплатный лимит.
 
-            :return: JSON ответ от сервера """
+            :return: JSON ответ от сервера. """
         pass
 
     @abstractmethod
     def senders(self) -> dict:
-        """ Получить одобренных отправителей
+        """ Получить одобренных отправителей.
 
-            :return: JSON ответ от сервера """
+            :return: JSON ответ от сервера. """
         pass
 
     @abstractmethod
     def stop_list(self) -> dict:
-        """ Получить список номеров в стоп листе
+        """ Получить список номеров в стоп листе.
 
-            :return: JSON ответ от сервера """
+            :return: JSON ответ от сервера. """
         pass
 
     @abstractmethod
     def add_stop_list(self, number: str, comment: str) -> dict:
-        """ Добавить телефон в стоп лист
+        """ Добавить телефон в стоп лист.
 
-            :param number: Номер для добавления
-            :param comment: Комментарий
-            :return: JSON ответ от сервера """
+            :param number: Номер для добавления.
+            :param comment: Комментарий.
+            :return: JSON ответ от сервера. """
         pass
 
     @abstractmethod
     def del_stop_list(self, number: str) -> dict:
-        """ Удалить телефон из стоп листа
+        """ Удалить телефон из стоп листа.
 
-            :param number: Номер для удаления
-            :return: JSON ответ от сервера """
+            :param number: Номер для удаления.
+            :return: JSON ответ от сервера. """
         pass
 
     @abstractmethod
     def callbacks(self) -> dict:
-        """ Получить список вебхуков (callbacks)
+        """ Получить список callbacks (webhooks).
 
-            :return: JSON ответ от сервера """
+            :return: JSON ответ от сервера. """
         pass
 
     @abstractmethod
     def add_callback(self, url: str) -> dict:
-        """ Добавить webhook/callback
+        """ Добавить callback (webhook).
 
-            :param url: Адрес webhook
-            :return: JSON ответ от сервера """
+            :param url: Адрес callback.
+            :return: JSON ответ от сервера. """
         pass
 
     @abstractmethod
     def del_callback(self, url: str) -> dict:
-        """ Удалить webhook/callback
+        """ Удалить callback (webhook).
 
-            :param url: Адрес webhook
-            :return: JSON ответ от сервера """
+            :param url: Адрес callback.
+            :return: JSON ответ от сервера. """
         pass
 
     def _collect_data(self, numbers: tuple[str], message: str,
@@ -175,7 +175,7 @@ class ABCSmsRu:
         if ip_address is not None:
             converted_ip = ipaddress.ip_address(ip_address)
             if not (type(converted_ip) is ipaddress.IPv4Address or type(converted_ip) is ipaddress.IPv6Address):
-                raise ValueError('Неверно указан ip адрес')
+                raise ValueError('Неверно указан ip адрес.')
         if test is None:
             test = debug
         self._debug_status = debug
@@ -184,7 +184,7 @@ class ABCSmsRu:
             numbers = [re.sub(r'^(\+?7|8)|\D', '', i) for i in numbers]
             self._data.update({'to': ','.join(numbers)})
         else:
-            raise OutOfPhoneNumbers('Количество номеров телефонов не может быть больше 100 за одн запрос')
+            raise OutOfPhoneNumbers('Количество номеров телефонов не может быть больше 100 за один запрос.')
 
         self._data.update({'text': message})
         if test:
@@ -193,13 +193,13 @@ class ABCSmsRu:
             self._data.update({'from': from_name})
         if timestamp is not None:
             if int(time.time()) - timestamp > 5184000:
-                raise OutOfTimestamp('Задержка сообщения не может быть больше 60 дней')
+                raise OutOfTimestamp('Задержка сообщения не может быть больше 60 дней.')
             self._data.update({'time': int(timestamp)})
         if ttl is not None:
             if ttl > 1440:
-                raise OutOfTimestamp('TTL не может быть больше 1440 минут')
+                raise OutOfTimestamp('TTL не может быть больше 1440 минут.')
             elif ttl < 1:
-                raise OutOfTimestamp('TTL не может быть меньше 1 минуты')
+                raise OutOfTimestamp('TTL не может быть меньше 1 минуты.')
             self._data.update({'ttl': int(ttl)})
         if day_time:
             self._data.update({'daytime': 1})
