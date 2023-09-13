@@ -325,7 +325,7 @@ response = sms_ru.callbacks()
 
 ## License
 
-Distributed under the MIT License. See [LICENSE](https://github.com/XpycTee/smsru_api/blob/main/LICENSE.md) for more information.
+Distributed under the Apache-2.0 License. See [LICENSE](https://github.com/XpycTee/smsru_api/blob/main/LICENSE.md) for more information.
 
 ## Authors
 
