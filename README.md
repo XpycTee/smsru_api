@@ -9,9 +9,9 @@
   </p>
 </p>
 
-![Downloads](https://img.shields.io/github/downloads/XpycTee/smsru_api/total) ![Contributors](https://img.shields.io/github/contributors/XpycTee/smsru_api?color=dark-green) ![Issues](https://img.shields.io/github/issues/XpycTee/smsru_api) ![License](https://img.shields.io/github/license/XpycTee/smsru_api) 
+![PyPI - Downloads](https://img.shields.io/pypi/dm/smsru-api) ![pypi](https://img.shields.io/pypi/v/smsru-api) ![pyversions](https://img.shields.io/pypi/pyversions/smsru-api) ![Downloads](https://img.shields.io/github/downloads/XpycTee/smsru_api/total) ![Contributors](https://img.shields.io/github/contributors/XpycTee/smsru_api?color=dark-green) ![Issues](https://img.shields.io/github/issues/XpycTee/smsru_api) ![License](https://img.shields.io/github/license/XpycTee/smsru_api) 
 
-## Table Of Contents
+## Table Of Contents 
 
 * [Built With](#built-with)
 * [Getting Started](#getting-started)
