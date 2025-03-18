@@ -28,6 +28,14 @@ class SmsRu(template.ABCSmsRu):
         self._collect_data(numbers, message, from_name, ip_address, timestamp, ttl, day_time, translit, test, debug)
         return self._request('/sms/send', self.data)
 
+    def callcheck_add(self, phone):
+        self._data.update({'phone': phone})
+        return self._request('/callcheck/add', self.data)
+    
+    def callcheck_status(self, check_id):
+        self._data.update({'check_id': check_id})
+        return self._request('/callcheck/status', self.data)
+
     def status(self, sms_id):
         self._data.update({'sms_id': sms_id})
         return self._request('/sms/status', self.data)
@@ -88,6 +96,14 @@ class AsyncSmsRu(template.ABCSmsRu):
                    translit=False, test=None, debug=False):
         self._collect_data(numbers, message, from_name, ip_address, timestamp, ttl, day_time, translit, test, debug)
         return await self._request('/sms/send', self.data)
+
+    async def callcheck_add(self, phone):
+        self._data.update({'phone': phone})
+        return await self._request('/callcheck/add', self.data)
+
+    async def callcheck_status(self, check_id):
+        self._data.update({'check_id': check_id})
+        return await self._request('/callcheck/status', self.data)
 
     async def status(self, sms_id):
         self._data.update({'sms_id': sms_id})

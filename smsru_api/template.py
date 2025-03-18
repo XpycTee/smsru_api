@@ -65,6 +65,22 @@ class ABCSmsRu:
         pass
 
     @abstractmethod
+    def callcheck_add(self, phone: str) -> dict:
+        """ Добавление номера в callcheck.
+
+            :param phone: Номер телефона пользователя, который необходимо авторизовать (с которого мы будем ожидать звонок).
+            :return: JSON ответ от сервера. """
+        pass
+
+    @abstractmethod
+    def callcheck_status(self, check_id: str) -> dict:
+        """ Проверка статуса звонка.
+
+            :param check_id: Идентификатор авторизации, полученный от sms.ru при добавлении номера.
+            :return: JSON ответ от сервера. """
+        pass
+
+    @abstractmethod
     def status(self, sms_id: str) -> dict:
         """ Получение статуса СМС по id.
 
