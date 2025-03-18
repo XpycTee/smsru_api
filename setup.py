@@ -7,11 +7,15 @@ with open("README.md", "r", encoding='UTF-8') as f:
 
 classifiers = [
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: Implementation :: PyPy",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
     "Intended Audience :: Developers",
     "Topic :: Software Development :: Libraries",
 ]
@@ -19,7 +23,7 @@ classifiers = [
 
 setup(
       name='smsru_api',
-      version='0.1.7',
+      version='0.2',
       description='Python API для сервиса отправки сообщений sms.ru',
       url="https://github.com/XpycTee/smsru_api",
       long_description=readme,
@@ -30,6 +34,6 @@ setup(
       author_email='i@xpyctee.ru',
       classifiers=classifiers,
       keywords="sms.ru api sms ru",
-      install_requires=['aiohttp'],
-      python_requires='>=3.7',
+      install_requires=['aiohttp', 'certifi'],
+      python_requires='>=3.8',
 )
