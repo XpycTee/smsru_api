@@ -98,24 +98,6 @@ response = sms_ru.send('9XXXXXXXX0', '9XXXXXXXX1', message='Message to sms')
 `test` Имитирует отправку сообщения для тестирования. True или False\
 `translit` Переводит все русские символы в латинские.\
 `debug` Включает режим отладки. Все сообщения отправляются с параметром test: True если он не указан в ручную
-#### Отправить четырехзначный авторизационный код звонком
-Метод `call()` отправляет запрос на звонок по указанному номеру
-```python
-from smsru_api import SmsRu
-
-sms_ru = SmsRu('Your API KEY')
-
-response = sms_ru.call('9XXXXXXXXX')
-```
-```json
-{
-     "status": "OK",
-     "code": "1435",
-     "call_id": "000000-10000000",
-     "cost": 0.4,
-     "balance": 0
-}
-```
 #### Получить статус отправленных сообщений
 Метод `status()` узнает статус СМС по его `sms_id`
 ```python

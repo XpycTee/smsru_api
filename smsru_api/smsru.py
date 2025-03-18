@@ -28,15 +28,6 @@ class SmsRu(template.ABCSmsRu):
         self._collect_data(numbers, message, from_name, ip_address, timestamp, ttl, day_time, translit, test, debug)
         return self._request('/sms/send', self.data)
 
-    def call(self, number, ip_address=None):
-        self._data.update({'phone': re.sub(r'^(\+?7|8)|\D', '', number)})
-        if ip_address is not None:
-            converted_ip = ipaddress.ip_address(ip_address)
-            if not (type(converted_ip) is ipaddress.IPv4Address or type(converted_ip) is ipaddress.IPv6Address):
-                raise ValueError('Неверно указан ip адрес.')
-            self._data.update({'ip': ip_address})
-        return self._request('/code/call', self.data)
-
     def status(self, sms_id):
         self._data.update({'sms_id': sms_id})
         return self._request('/sms/status', self.data)
@@ -97,15 +88,6 @@ class AsyncSmsRu(template.ABCSmsRu):
                    translit=False, test=None, debug=False):
         self._collect_data(numbers, message, from_name, ip_address, timestamp, ttl, day_time, translit, test, debug)
         return await self._request('/sms/send', self.data)
-
-    async def call(self, number, ip_address=None):
-        self._data.update({'phone': re.sub(r'^(\+?7|8)|\D', '', number)})
-        if ip_address is not None:
-            converted_ip = ipaddress.ip_address(ip_address)
-            if not (type(converted_ip) is ipaddress.IPv4Address or type(converted_ip) is ipaddress.IPv6Address):
-                raise ValueError('Неверно указан ip адрес.')
-            self._data.update({'ip': ip_address})
-        return await self._request('/code/call', self.data)
 
     async def status(self, sms_id):
         self._data.update({'sms_id': sms_id})
