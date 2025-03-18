@@ -1,4 +1,8 @@
 import ipaddress
+
+import ssl
+import certifi
+
 from urllib import request
 from urllib import parse
 
@@ -18,7 +22,8 @@ class SmsRu(template.ABCSmsRu):
             data = self.data
         encoded_data = parse.urlencode(data).encode()
         req = request.Request(f'https://sms.ru{path}', data=encoded_data)
-        res = request.urlopen(req)
+        context = ssl.create_default_context(cafile=certifi.where())
+        res = request.urlopen(req,  context=context)
         return json.loads(res.read())
 
     def send(self, *numbers, message,
@@ -86,7 +91,8 @@ class AsyncSmsRu(template.ABCSmsRu):
     async def _request(self, path, data=None):
         if data is None:
             data = self.data
-        async with aiohttp.ClientSession("https://sms.ru") as session:
+        ssl_context = ssl.create_default_context(cafile=certifi.where())
+        async with aiohttp.ClientSession("https://sms.ru", connector=aiohttp.TCPConnector(ssl=ssl_context)) as session:
             async with session.post(path, data=data) as res:
                 return await res.json()
 
