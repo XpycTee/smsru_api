@@ -15,7 +15,7 @@
 
 * [Built With](#built-with)
 * [Getting Started](#getting-started)
-  * [Installation](#installation)
+    * [Installation](#installation)
 * [Usage](#usage)
 * [License](#license)
 * [Authors](#authors)
@@ -23,10 +23,10 @@
 
 ## Built With
 
-aiohttp
+aiohttp\
+certifi
 
 ## Getting Started
-
 
 ### Installation
 
@@ -36,22 +36,22 @@ pip install smsru-api
 
 ## Usage
 
-Чтобы использовать скрипт, просто импортируйте его в свой код
+Чтобы использовать скрипт, просто импортируйте его в свой код:
 ```python
 import smsru_api
 ```
-или импортируйте сам класс `SmsRu()`
+или импортируйте сам класс `SmsRu()`:
 ```python
 from smsru_api import SmsRu
 ```
-Для асинхронной работы есть класс `AsyncSmsRu()`
+Для асинхронной работы есть класс `AsyncSmsRu()`:
 
 ```python
 from smsru_api import AsyncSmsRu
 ```
 Все методы асинхронного класса это корутины.
 
-Классам `SmsRu()` или `AsyncSmsRu()` в параметры нужно передать ваш API ключ из личного кабинета
+Классам `SmsRu()` или `AsyncSmsRu()` в параметры нужно передать ваш API ключ из личного кабинета:
 ```python
 from smsru_api import SmsRu, AsyncSmsRu
 
@@ -59,7 +59,7 @@ sms_ru = SmsRu('Your API KEY')
 async_sms_ru = AsyncSmsRu('Your API KEY')
 ```
 #### Отправка сообщений
-Метод `send()` отправляет ваше сообщение на номер(а) через `sms.ru`
+Метод `send()` отправляет ваше сообщение на номер(а) через `sms.ru`:
 ```python
 from smsru_api import SmsRu
 
@@ -80,44 +80,71 @@ response = sms_ru.send('9XXXXXXXX0', '9XXXXXXXX1', message='Message to sms')
         "79XXXXXXXX1": {
             "status": "ERROR",
             "status_code": 207,
-            "status_text": "На этот номер (или один из номеров) нельзя отправлять сообщения, либо указано более 100 номеров в списке получателей" // Описание ошибки
+            "status_text": "На этот номер (или один из номеров) нельзя отправлять сообщения, либо указано более 100 номеров в списке получателей"
         }
     } ,
     "balance": 0
 }
 ```
-Метод возвращает `JSON` ответ полученный от `sms.ru`
-также он имеет 10 параметров:\
+Метод возвращает `JSON` ответ, полученный от `sms.ru`.
+Также он имеет 10 параметров:\
 `numbers` * Номер телефона получателя (либо несколько номеров до 100 штук за один запрос).\
 `message` * Текст сообщения в кодировке UTF-8.\
 `from_name` Имя отправителя (должно быть согласовано с администрацией).\
-`ip_address` В этом параметре вы можете передать нам IP адрес вашего пользователя.\
+`ip_address` В этом параметре вы можете передать sms.ru IP адрес вашего пользователя.\
 `timestamp` Время отложенной отправки.\
 `ttl` Срок жизни сообщения в минутах (от 1 до 1440).\
 `day_time` Учитывает часовой пояс получателя. Если указан этот параметр, то параметр time игнорируется.\
-`test` Имитирует отправку сообщения для тестирования. True или False\
+`test` Имитирует отправку сообщения для тестирования. True или False.\
 `translit` Переводит все русские символы в латинские.\
-`debug` Включает режим отладки. Все сообщения отправляются с параметром test: True если он не указан в ручную
-#### Отправить четырехзначный авторизационный код звонком
-Метод `call()` отправляет запрос на звонок по указанному номеру
+`debug` Включает режим отладки. Все сообщения отправляются с параметром test: True если он не указан вручную.
+#### Авторизовать пользователя по звонку с его номера
+Метод `callcheck_add()` добавляет телефон в ожидание на `sms.ru`:
 ```python
 from smsru_api import SmsRu
 
 sms_ru = SmsRu('Your API KEY')
 
-response = sms_ru.call('9XXXXXXXXX')
+response = sms_ru.callcheck_add('9XXXXXXXX0')
 ```
 ```json
 {
-     "status": "OK",
-     "code": "1435",
-     "call_id": "000000-10000000",
-     "cost": 0.4,
-     "balance": 0
+    "status": "OK",
+    "status_code": 100,
+    "check_id": "201737-542",
+    "call_phone": "78005008275",
+    "call_phone_pretty": "+7 (800) 500-8275",
+    "call_phone_html": "&lt;a href="callto:78005008275"&gt;+7 (800) 500-8275&lt;\a&gt;"
 }
 ```
+Метод возвращает `JSON` ответ, полученный от `sms.ru`.
+Также он имеет 1 параметр:\
+`phone` * Номер телефона пользователя, который необходимо авторизовать (с которого мы будем ожидать звонок).
+#### Проверка статуса звонка
+Метод `callcheck_status()` проверяет, был ли совершен звонок от пользователя.
+
+> `sms.ru` настоятельно рекомендует использовать бесплатную опцию API callback для более быстрого и удобного получения статусов проверок. Она позволяет вам не запрашивать многократно статус проверки - он будет автоматически отправляться на ваш сервер в реальном времени.
+
+```python
+from smsru_api import SmsRu
+
+sms_ru = SmsRu('Your API KEY')
+
+response = sms_ru.callcheck_status('201737-542')
+```
+```json
+{
+    "status": "OK",
+    "status_code": 100,
+    "check_status": "401",
+    "check_status_text": "Авторизация по звонку: номер подтвержден"
+}
+```
+Метод возвращает `JSON` ответ, полученный от `sms.ru`.
+Также он имеет 1 параметр:\
+`check_id` * Идентификатор авторизации, полученный от `sms.ru` при добавлении номера.
 #### Получить статус отправленных сообщений
-Метод `status()` узнает статус СМС по его `sms_id`
+Метод `status()` узнает статус СМС по его `sms_id`:
 ```python
 from smsru_api import SmsRu
 
@@ -141,7 +168,7 @@ response = sms_ru.status('1000-100000')
 }
 ```
 #### Узнать стоимость СМС сообщений
-Метод `cost()` запрашивает у сервера стоимость СМС
+Метод `cost()` запрашивает у сервера стоимость СМС:
 ```python
 from smsru_api import SmsRu
 
@@ -166,7 +193,7 @@ response = sms_ru.cost('9XXXXXXXX0', '9XXXXXXXX1', message='Message to sms')
 }
 ```
 #### Узнать баланс
-Метод `balance()` запрашивает у сервера баланс аккаунта
+Метод `balance()` запрашивает у сервера баланс аккаунта:
 ```python
 from smsru_api import SmsRu
 
@@ -182,8 +209,8 @@ response = sms_ru.balance()
 }
 ```
 #### Узнать лимит
-Метод `limit()` запрашивает у сервера лимиты по отправке СМС \
-Метод `free()` запрашивает у сервера бесплатные лимиты по отправке СМС
+Метод `limit()` запрашивает у сервера лимиты по отправке СМС.\
+Метод `free()` запрашивает у сервера бесплатные лимиты по отправке СМС:
 ```python
 from smsru_api import SmsRu
 
@@ -208,7 +235,7 @@ free_response = sms_ru.free()
 }
 ```
 #### Получить одобренных отправителей
-Метод `senders()` запрашивает у сервера отправителей
+Метод `senders()` запрашивает у сервера отправителей:
 ```python
 from smsru_api import SmsRu
 
@@ -223,8 +250,8 @@ response = sms_ru.senders()
     "senders": ["company.com", "Company"]
 }
 ```
-#### Добавить номер в стоп лист
-Метод `add_stop_list()` добавляет номер в стоп лист
+#### Добавить номер в стоп-лист
+Метод `add_stop_list()` добавляет номер в стоп-лист:
 ```python
 from smsru_api import SmsRu
 sms_ru = SmsRu('Your API KEY')
@@ -237,8 +264,8 @@ response = sms_ru.add_stop_list('9XXXXXXXXX', 'Comment')
     "status_code": 100
 }
 ```
-#### Удалить номер из стоп листа
-Метод `del_stop_list()` удаляет номер из стоп листа
+#### Удалить номер из стоп-листа
+Метод `del_stop_list()` удаляет номер из стоп-листа:
 ```python
 from smsru_api import SmsRu
 sms_ru = SmsRu('Your API KEY')
@@ -251,8 +278,8 @@ response = sms_ru.del_stop_list('9XXXXXXXXX')
     "status_code": 100
 }
 ```
-#### Получить список номеров в стоп листе
-Метод `stop_list()` получает список номеров в стоп листе
+#### Получить список номеров в стоп-листе
+Метод `stop_list()` получает список номеров в стоп-листе:
 ```python
 from smsru_api import SmsRu
 sms_ru = SmsRu('Your API KEY')
@@ -270,7 +297,7 @@ response = sms_ru.stop_list()
 }
 ```
 #### Добавить callback (webhook)
-Метод `add_callback()` добавляет callback (webhook) на аккаунт
+Метод `add_callback()` добавляет callback (webhook) на аккаунт:
 ```python
 from smsru_api import SmsRu
 sms_ru = SmsRu('Your API KEY')
@@ -282,13 +309,13 @@ response = sms_ru.add_callback('https://campany.com/callback')
     "status": "OK",
     "status_code": 100,
     "callback": [
-         "https://campany.com/callback",
-         "http://anothersite.ru/callback/index.php"
+        "https://campany.com/callback",
+        "http://anothersite.ru/callback/index.php"
     ]
  }
 ```
 #### Удалить callback (webhook)
-Метод `del_callback()` удаляет callback (webhook) из аккаунта
+Метод `del_callback()` удаляет callback (webhook) из аккаунта:
 ```python
 from smsru_api import SmsRu
 sms_ru = SmsRu('Your API KEY')
@@ -300,12 +327,12 @@ response = sms_ru.del_callback('https://campany.com/callback')
     "status": "OK",
     "status_code": 100,
     "callback": [
-         "http://anothersite.ru/callback/index.php"
+        "http://anothersite.ru/callback/index.php"
     ]
  }
 ```
 #### Получить список callbacks (webhooks)
-Метод `callbacks()` получает список callbacks (webhooks)
+Метод `callbacks()` получает список callbacks (webhooks):
 ```python
 from smsru_api import SmsRu
 sms_ru = SmsRu('Your API KEY')
@@ -317,8 +344,8 @@ response = sms_ru.callbacks()
     "status": "OK",
     "status_code": 100,
     "callback": [
-         "https://campany.com/callback",
-         "http://anothersite.ru/callback/index.php"
+        "https://campany.com/callback",
+        "http://anothersite.ru/callback/index.php"
     ]
 }
 ```

@@ -65,12 +65,18 @@ class ABCSmsRu:
         pass
 
     @abstractmethod
-    def call(self, number: str, ip_address: str) -> dict:
-        """ Отправить четырехзначный авторизационный код звонком.
+    def callcheck_add(self, phone: str) -> dict:
+        """ Добавление номера в callcheck.
 
-            :param number: Номер телефона получателя. Номер телефона для отправки сообщения, желательно без кода страны.
-                Возможно использования и других видов, скрипт удалит все не нужное.
-            :param ip_address: [Опционально]. В этом параметре вы можете передать нам IP адрес вашего пользователя.
+            :param phone: Номер телефона пользователя, который необходимо авторизовать (с которого мы будем ожидать звонок).
+            :return: JSON ответ от сервера. """
+        pass
+
+    @abstractmethod
+    def callcheck_status(self, check_id: str) -> dict:
+        """ Проверка статуса звонка.
+
+            :param check_id: Идентификатор авторизации, полученный от sms.ru при добавлении номера.
             :return: JSON ответ от сервера. """
         pass
 
@@ -172,6 +178,8 @@ class ABCSmsRu:
                       from_name: str = None, ip_address: str = None,
                       timestamp: int = None, ttl: int = None, day_time: bool = False,
                       translit: bool = False, test: bool = None, debug: bool = False):
+        data = {}
+
         if ip_address is not None:
             converted_ip = ipaddress.ip_address(ip_address)
             if not (type(converted_ip) is ipaddress.IPv4Address or type(converted_ip) is ipaddress.IPv6Address):
@@ -182,28 +190,31 @@ class ABCSmsRu:
 
         if len(numbers) < 100:
             numbers = [re.sub(r'^(\+?7|8)|\D', '', i) for i in numbers]
-            self._data.update({'to': ','.join(numbers)})
+            data.update({'to': ','.join(numbers)})
         else:
             raise OutOfPhoneNumbers('Количество номеров телефонов не может быть больше 100 за один запрос.')
 
-        self._data.update({'text': message})
+        data.update({'text': message})
         if test:
-            self._data.update({'test': 1})
+            data.update({'test': 1})
         if from_name is not None:
-            self._data.update({'from': from_name})
+            data.update({'from': from_name})
         if timestamp is not None:
             if int(time.time()) - timestamp > 5184000:
                 raise OutOfTimestamp('Задержка сообщения не может быть больше 60 дней.')
-            self._data.update({'time': int(timestamp)})
+            data.update({'time': int(timestamp)})
         if ttl is not None:
             if ttl > 1440:
                 raise OutOfTimestamp('TTL не может быть больше 1440 минут.')
             elif ttl < 1:
                 raise OutOfTimestamp('TTL не может быть меньше 1 минуты.')
-            self._data.update({'ttl': int(ttl)})
+            data.update({'ttl': int(ttl)})
         if day_time:
-            self._data.update({'daytime': 1})
+            data.update({'daytime': 1})
         if ip_address is not None:
-            self._data.update({'ip': ip_address})
+            data.update({'ip': ip_address})
         if translit:
-            self._data.update({'translit': 1})
+            data.update({'translit': 1})
+
+        return data  # Возвращаем новый объект данных
+
