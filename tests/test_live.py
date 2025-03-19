@@ -7,7 +7,8 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 
 from dotenv import load_dotenv
 
-from smsru_api.smsru import SmsRu, AsyncSmsRu
+from smsru_api import Client, AsyncClient
+
 
 # Load environment variables from .env file
 load_dotenv()
@@ -21,7 +22,7 @@ auto_test = os.environ.get('AUTO_TEST', 'false').lower() == 'true'
 class TestSmsRu(unittest.TestCase):
     def setUp(self):
         self.api_id = API_ID
-        self.smsru = SmsRu(self.api_id)
+        self.smsru = Client(self.api_id)
         self.check_id = None
 
     def test_send(self):
@@ -93,7 +94,7 @@ class TestSmsRu(unittest.TestCase):
 class TestAsyncSmsRu(unittest.IsolatedAsyncioTestCase):
     async def asyncSetUp(self):
         self.api_id = API_ID
-        self.smsru = AsyncSmsRu(self.api_id)
+        self.smsru = AsyncClient(self.api_id)
         self.check_id = None
 
     async def test_send(self):

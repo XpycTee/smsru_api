@@ -14,7 +14,7 @@ class OutOfTimestamp(Exception):
     pass
 
 
-class ABCSmsRu:
+class BaseClient:
     """ SMS.RU API class.
 
         :param api_id: Ваш API ключ на главной странице личного кабинета. """
@@ -23,15 +23,19 @@ class ABCSmsRu:
     def __init__(self, api_id: str):
         self._debug_status = False
         self._api_id = api_id
-        self._data = {'api_id': self.api_id, 'json': 1, 'partner_id': 358434}
+        self._def_data = {
+            'api_id': self.api_id,  # API ключ
+            'json': 1,  # Возвращать ответ в формате JSON
+            'partner_id': 358434  # ID партнера, прошу если вы будете использовать мой код, не меняйте его, это то что мотивирует меня поддерживапть данное api, спасибо ツ
+        }
 
     @property
     def api_id(self) -> str:
         return self._api_id
 
     @property
-    def data(self) -> dict:
-        return self._data
+    def defaults(self) -> dict:
+        return self._def_data
 
     @abstractmethod
     def _request(self, path: str, data: dict) -> dict:
@@ -44,7 +48,7 @@ class ABCSmsRu:
 
     @abstractmethod
     def send(self, *numbers: str, message: str, from_name: str, ip_address: str, timestamp: int,
-             ttl: int, day_time: bool, translit: bool, test: bool, debug: bool) -> dict:
+             ttl: int, day_time: bool, translit: bool, test: bool, debug: bool, partner_id: int) -> dict:
         """ Отправка сообщения на сервер SMS.RU.
 
             :param numbers: Номер телефона получателя (либо несколько номеров до
@@ -61,6 +65,7 @@ class ABCSmsRu:
             :param translit: [Опционально] Переводит все русские символы в латинские.
             :param debug: [Опционально] Включает режим отладки. Все сообщения отправляются с параметром test: True
                 если он не указан вручную.
+            :param partner_id: [Опционально] ID партнера (для агентов).
             :return: JSON ответ от сервера. """
         pass
 
@@ -177,7 +182,8 @@ class ABCSmsRu:
     def _collect_data(self, numbers: tuple, message: str,
                       from_name: str = None, ip_address: str = None,
                       timestamp: int = None, ttl: int = None, day_time: bool = False,
-                      translit: bool = False, test: bool = None, debug: bool = False):
+                      translit: bool = False, test: bool = None, debug: bool = False, 
+                      partner_id: int = None) -> dict:
         data = {}
 
         if ip_address is not None:
@@ -215,6 +221,8 @@ class ABCSmsRu:
             data.update({'ip': ip_address})
         if translit:
             data.update({'translit': 1})
+        if partner_id is not None:
+            data.update({'partner_id': partner_id})
 
         return data  # Возвращаем новый объект данных
 
