@@ -35,7 +35,7 @@ pip install smsru-api
 ```
 
 ## Usage
-Чтобы использовать скрипт, импортируйте класс `Client()`:
+Чтобы использовать библетоеку, импортируйте класс `Client()`:
 
 ```python
 from smsru_api import Client
@@ -44,7 +44,7 @@ from smsru_api import Client
 ```python
 from smsru_api import AsyncClient
 ```
-Все методы асинхронного класса являются корутинами и идентичны сихронным.
+> Все методы асинхронного класса являются корутинами и идентичны сихронным.
 
 Классам `Client()` или `AsyncClient()` в параметры нужно передать ваш API ключ из личного кабинета:
 ```python
