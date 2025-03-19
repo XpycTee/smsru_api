@@ -23,8 +23,8 @@
 
 ## Built With
 
-aiohttp\
-certifi
+- aiohttp
+- certifi
 
 ## Getting Started
 
