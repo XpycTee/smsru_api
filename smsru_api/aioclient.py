@@ -12,11 +12,11 @@ class AsyncClient(template.BaseClient):
         super().__init__(api_id)
 
     async def _request(self, path, data={}):
-        request = self.defaults.copy()
-        request.update(data)
+        request_data = self.defaults.copy()
+        request_data.update(data)
         ssl_context = ssl.create_default_context(cafile=certifi.where())
         async with aiohttp.ClientSession("https://sms.ru", connector=aiohttp.TCPConnector(ssl=ssl_context)) as session:
-            async with session.post(path, data=request) as res:
+            async with session.post(path, data=request_data) as res:
                 return await res.json()
 
     async def send(self, *numbers, **kwargs):

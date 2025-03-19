@@ -15,9 +15,9 @@ class Client(template.BaseClient):
         super().__init__(api_id)
 
     def _request(self, path, data={}):
-        request = self.defaults.copy()
-        request.update(data)
-        encoded_request = parse.urlencode(request).encode()
+        request_data = self.defaults.copy()
+        request_data.update(data)
+        encoded_request = parse.urlencode(request_data).encode()
         req = request.Request(f'https://sms.ru{path}', data=encoded_request)
         context = ssl.create_default_context(cafile=certifi.where())
         res = request.urlopen(req,  context=context)
