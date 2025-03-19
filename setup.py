@@ -23,7 +23,7 @@ classifiers = [
 
 setup(
     name='smsru_api',
-    version='0.2',
+    version='1.0',
     description='Python API для сервиса отправки сообщений sms.ru',
     url="https://github.com/XpycTee/smsru_api",
     long_description=readme,
