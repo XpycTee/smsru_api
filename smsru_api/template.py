@@ -47,7 +47,7 @@ class BaseClient:
         pass
 
     @abstractmethod
-    def send(self, *numbers: str, message: str, from_name: str, ip_address: str, timestamp: int,
+    def send(self, *numbers: str, message: str, multi: dict, from_name: str, ip_address: str, timestamp: int,
              ttl: int, day_time: bool, translit: bool, test: bool, debug: bool, partner_id: int) -> dict:
         """ Отправка сообщения на сервер SMS.RU.
 
@@ -55,6 +55,7 @@ class BaseClient:
                 100 штук за один запрос). Номер телефона для отправки сообщения, желательно без кода страны. Возможно
                 использования и других видов, скрипт удалит все не нужное.
             :param message: Текст сообщения в кодировке UTF-8.
+            :param multi: Отправка сообщения на несколько номеров с разными текстами, если указан этот параметр, то параметры numbers и message игнорируются.
             :param from_name: [Опционально] Имя отправителя (должно быть согласовано с администрацией).
             :param ip_address: [Опционально] В этом параметре вы можете передать нам IP адрес вашего пользователя.
             :param timestamp: [Опционально] Время отложенной отправки.
@@ -179,11 +180,14 @@ class BaseClient:
             :return: JSON ответ от сервера. """
         pass
 
-    def _collect_data(self, numbers: tuple, message: str,
+    def _collect_data(self, numbers: tuple, message: str = None, multi: dict = {},
                       from_name: str = None, ip_address: str = None,
                       timestamp: int = None, ttl: int = None, day_time: bool = False,
                       translit: bool = False, test: bool = None, debug: bool = False, 
                       partner_id: int = None) -> dict:
+        if len(numbers) > 100 or len(multi) > 100:
+            raise OutOfPhoneNumbers('Количество номеров телефонов не может быть больше 100 за один запрос.')
+
         data = {}
 
         if ip_address is not None:
@@ -194,13 +198,20 @@ class BaseClient:
             test = debug
         self._debug_status = debug
 
-        if len(numbers) < 100:
+        if multi:
+            multi_data = {}
+            for key, value in multi.items():
+                multi_data[f'to[{key}]'] = value
+            data.update(multi_data)
+        else:
+            if not message:
+                raise ValueError('Не указан текст сообщения')
+            if not numbers:
+                raise ValueError('Не указан номер(а) телефона')
             numbers = [re.sub(r'^(\+?7|8)|\D', '', i) for i in numbers]
             data.update({'to': ','.join(numbers)})
-        else:
-            raise OutOfPhoneNumbers('Количество номеров телефонов не может быть больше 100 за один запрос.')
+            data.update({'text': message})
 
-        data.update({'text': message})
         if test:
             data.update({'test': 1})
         if from_name is not None:

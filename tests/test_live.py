@@ -29,6 +29,10 @@ class TestSmsRu(unittest.TestCase):
         response = self.smsru.send(TEST_PHONE, message='Test message', debug=True)
         self.assertEqual(response['status'], 'OK')
 
+    def test_send_multi(self):
+        response = self.smsru.send(multi={'79999999999': 'Test message', '79999999998': 'Test message 2'}, debug=True)
+        self.assertEqual(response['status'], 'OK')
+
     @unittest.skipIf(auto_test, "Skipping callcheck_add test in auto test mode")
     def test_callcheck_add(self):
         response = self.smsru.callcheck_add(TEST_PHONE)
@@ -99,6 +103,10 @@ class TestAsyncSmsRu(unittest.IsolatedAsyncioTestCase):
 
     async def test_send(self):
         response = await self.smsru.send(TEST_PHONE, message='Test message', debug=True)
+        self.assertEqual(response['status'], 'OK')
+
+    async def test_send_multi(self):
+        response = await self.smsru.send(multi={'79999999999': 'Test message', '79999999998': 'Test message 2'}, debug=True)
         self.assertEqual(response['status'], 'OK')
 
     @unittest.skipIf(auto_test, "Skipping callcheck_add test in auto test mode")

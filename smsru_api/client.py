@@ -22,8 +22,8 @@ class Client(template.BaseClient):
         res = request.urlopen(req,  context=context)
         return json.loads(res.read())
 
-    def send(self, *numbers, message, **kwargs):
-        data = self._collect_data(numbers, message, **kwargs)
+    def send(self, *numbers, **kwargs):
+        data = self._collect_data(numbers, **kwargs)
         return self._request('/sms/send', data)
 
     def callcheck_add(self, phone):

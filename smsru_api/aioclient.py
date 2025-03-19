@@ -18,8 +18,8 @@ class AsyncClient(template.BaseClient):
             async with session.post(path, data=data) as res:
                 return await res.json()
 
-    async def send(self, *numbers, message, **kwargs):
-        data = self._collect_data(numbers, message, **kwargs)
+    async def send(self, *numbers, **kwargs):
+        data = self._collect_data(numbers, **kwargs)
         return await self._request('/sms/send', data)
 
     async def callcheck_add(self, phone):

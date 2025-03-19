@@ -25,6 +25,15 @@ class TestSmsRu(unittest.TestCase):
         self.assertEqual(response['status'], 'OK')
 
     @patch('smsru_api.client.request.urlopen')
+    def test_send_multi(self, mock_urlopen):
+        mock_response = MagicMock()
+        mock_response.read.return_value = json.dumps({'status': 'OK'}).encode()
+        mock_urlopen.return_value = mock_response
+
+        response = self.smsru.send(multi={'79999999999': 'Test message', '79999999998': 'Test message 2'}, debug=True)
+        self.assertEqual(response['status'], 'OK')
+
+    @patch('smsru_api.client.request.urlopen')
     def test_callcheck_add(self, mock_urlopen):
         mock_response = MagicMock()
         mock_response.read.return_value = json.dumps({'status': 'OK'}).encode()
@@ -163,6 +172,15 @@ class TestAsyncSmsRu(unittest.IsolatedAsyncioTestCase):
         mock_post.return_value.__aenter__.return_value = mock_response
 
         response = await self.smsru.send('79999999999', message='Test message', debug=True)
+        self.assertEqual(response['status'], 'OK')
+
+    @patch('smsru_api.aioclient.aiohttp.ClientSession.post')
+    async def test_send_multi(self, mock_post):
+        mock_response = AsyncMock()
+        mock_response.json = AsyncMock(return_value={'status': 'OK'})
+        mock_post.return_value.__aenter__.return_value = mock_response
+
+        response = await self.smsru.send(multi={'79999999999': 'Test message', '79999999998': 'Test message 2'}, debug=True)
         self.assertEqual(response['status'], 'OK')
 
     @patch('smsru_api.aioclient.aiohttp.ClientSession.post')
