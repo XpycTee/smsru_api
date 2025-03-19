@@ -10,31 +10,15 @@
 </p>
 
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/smsru-api) ![pypi](https://img.shields.io/pypi/v/smsru-api) ![pyversions](https://img.shields.io/pypi/pyversions/smsru-api) ![Downloads](https://img.shields.io/github/downloads/XpycTee/smsru_api/total) ![Contributors](https://img.shields.io/github/contributors/XpycTee/smsru_api?color=dark-green) ![Issues](https://img.shields.io/github/issues/XpycTee/smsru_api) ![License](https://img.shields.io/github/license/XpycTee/smsru_api) 
+## Начало работы
 
-## Table Of Contents 
-
-* [Built With](#built-with)
-* [Getting Started](#getting-started)
-    * [Installation](#installation)
-* [Usage](#usage)
-* [License](#license)
-* [Authors](#authors)
-* [Acknowledgements](#acknowledgements)
-
-## Built With
-
-- aiohttp
-- certifi
-
-## Getting Started
-
-### Installation
+### Установка
 
 ```
 pip install smsru-api
 ```
 
-## Usage
+## Использование
 Чтобы использовать библетоеку, импортируйте класс `Client()`:
 
 ```python
@@ -374,14 +358,10 @@ response = smsru.callbacks()
 }
 ```
 
-## License
+## Лицензия
 
-Distributed under the Apache-2.0 License. See [LICENSE](https://github.com/XpycTee/smsru_api/blob/main/LICENSE.md) for more information.
+Распространяется по лицензии Apache-2.0. См. [LICENSE](https://github.com/XpycTee/smsru_api/blob/main/LICENSE.md) для получения дополнительной информации.
 
-## Authors
+## Авторы
 
 * **XpycTee** - *просто я* - [XpycTee](https://github.com/XpycTee) - *smsru_api*
-
-## Acknowledgements
-
-* [XpycTee](https://github.com/XpycTee)
