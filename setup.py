@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 
-with open("README.md", "r", encoding='UTF-8') as f:
+with open("pypidesc.md", "r", encoding='UTF-8') as f:
     readme = f.read()
 
 
@@ -20,10 +20,13 @@ classifiers = [
     "Topic :: Software Development :: Libraries",
 ]
 
+with open("requirements.txt", "r", encoding='UTF-8') as f:
+    requieres = [line.rstrip('\n') for line in f]
+
 
 setup(
     name='smsru_api',
-    version='1.1.2',
+    version='1.1.2.post1',
     description='Python API для сервиса отправки сообщений sms.ru',
     url="https://github.com/XpycTee/smsru_api",
     long_description=readme,
@@ -34,9 +37,6 @@ setup(
     author_email='i@xpyctee.ru',
     classifiers=classifiers,
     keywords="sms.ru api sms ru",
-    install_requires=[
-        'aiohttp', 
-        'certifi'
-    ],
+    install_requires=requieres,
     python_requires='>=3.8',
 )
