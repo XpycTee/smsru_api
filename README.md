@@ -5,14 +5,19 @@
   </p>
 </p>
 
+Python Versions\
+![pyversions](https://img.shields.io/pypi/pyversions/smsru-api?label=Python) 
+
 PyPI\
-![PyPI - Downloads](https://img.shields.io/pypi/dm/smsru-api?label=PyPI%20Downloads) ![pypi](https://img.shields.io/pypi/v/smsru-api?label=PyPI%20Release) ![pyversions](https://img.shields.io/pypi/pyversions/smsru-api?label=Python) 
+![PyPI - Downloads](https://img.shields.io/pypi/dm/smsru-api?label=PyPI%20Downloads) ![pypi](https://img.shields.io/pypi/v/smsru-api?label=PyPI%20Release)
 
 GitHub\
 ![Downloads](https://img.shields.io/github/downloads/XpycTee/smsru_api/total?label=GitHub%20Downloads) ![GitHub Release](https://img.shields.io/github/v/release/xpyctee/smsru_api?label=GitHub%20Release) ![Contributors](https://img.shields.io/github/contributors/XpycTee/smsru_api?color=dark-green&label=Contributors) ![Issues](https://img.shields.io/github/issues/XpycTee/smsru_api?label=Issues) 
 
 License\
 ![License](https://img.shields.io/github/license/XpycTee/smsru_api?label=License) 
+
+
 
 ## Начало работы
 
