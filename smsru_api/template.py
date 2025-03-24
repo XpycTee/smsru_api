@@ -180,11 +180,13 @@ class BaseClient:
             :return: JSON ответ от сервера. """
         pass
 
-    def _collect_data(self, numbers: tuple, message: str = None, multi: dict = {},
+    def _collect_data(self, numbers: tuple, message: str = None, multi=None,
                       from_name: str = None, ip_address: str = None,
                       timestamp: int = None, ttl: int = None, day_time: bool = False,
-                      translit: bool = False, test: bool = None, debug: bool = False, 
+                      translit: bool = False, test: bool = None, debug: bool = False,
                       partner_id: int = None) -> dict:
+        if multi is None:
+            multi = {}
         if len(numbers) > 100 or len(multi) > 100:
             raise OutOfPhoneNumbers('Количество номеров телефонов не может быть больше 100 за один запрос.')
 

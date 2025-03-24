@@ -14,7 +14,9 @@ class Client(template.BaseClient):
     def __init__(self, api_id):
         super().__init__(api_id)
 
-    def _request(self, path, data={}):
+    def _request(self, path, data=None):
+        if data is None:
+            data = {}
         request_data = self.defaults.copy()
         request_data.update(data)
         encoded_request = parse.urlencode(request_data).encode()

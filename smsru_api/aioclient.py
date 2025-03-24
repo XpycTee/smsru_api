@@ -11,7 +11,9 @@ class AsyncClient(template.BaseClient):
     def __init__(self, api_id):
         super().__init__(api_id)
 
-    async def _request(self, path, data={}):
+    async def _request(self, path, data=None):
+        if data is None:
+            data = {}
         request_data = self.defaults.copy()
         request_data.update(data)
         ssl_context = ssl.create_default_context(cafile=certifi.where())
