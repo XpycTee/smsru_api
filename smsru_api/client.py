@@ -1,11 +1,6 @@
-import ssl
-import certifi
-
-from urllib import request
-from urllib import parse
-
 import re
-import json
+
+import httpx
 
 from smsru_api import template
 
@@ -13,17 +8,18 @@ from smsru_api import template
 class Client(template.BaseClient):
     def __init__(self, api_id):
         super().__init__(api_id)
+        self._base_url = "https://sms.ru"
 
     def _request(self, path, data=None):
         if data is None:
             data = {}
         request_data = self.defaults.copy()
         request_data.update(data)
-        encoded_request = parse.urlencode(request_data).encode()
-        req = request.Request(f'https://sms.ru{path}', data=encoded_request)
-        context = ssl.create_default_context(cafile=certifi.where())
-        res = request.urlopen(req,  context=context)
-        return json.loads(res.read())
+        url = self._base_url + path
+        with httpx.Client() as client:
+            response = client.post(url, data=request_data)
+            response.raise_for_status()
+            return response.json()
 
     def send(self, *numbers, **kwargs):
         data = self._collect_data(numbers, **kwargs)

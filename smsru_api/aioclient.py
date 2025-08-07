@@ -1,8 +1,6 @@
-import ssl
-import certifi
-
 import re
-import aiohttp
+
+import httpx
 
 from smsru_api import template
 
@@ -10,16 +8,18 @@ from smsru_api import template
 class AsyncClient(template.BaseClient):
     def __init__(self, api_id):
         super().__init__(api_id)
+        self._base_url = "https://sms.ru"
 
     async def _request(self, path, data=None):
         if data is None:
             data = {}
         request_data = self.defaults.copy()
         request_data.update(data)
-        ssl_context = ssl.create_default_context(cafile=certifi.where())
-        async with aiohttp.ClientSession("https://sms.ru", connector=aiohttp.TCPConnector(ssl=ssl_context)) as session:
-            async with session.post(path, data=request_data) as res:
-                return await res.json()
+        url = self._base_url + path
+        async with httpx.AsyncClient() as client:
+            response = await client.post(url, data=request_data)
+            response.raise_for_status()
+            return response.json()
 
     async def send(self, *numbers, **kwargs):
         data = self._collect_data(numbers, **kwargs)
