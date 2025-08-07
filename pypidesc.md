@@ -1,7 +1,7 @@
 <p align="center">
   <h3 align="center">SMS.RU API</h3>
   <p align="center">
-    Python API для сервиса отправки сообщений sms.ru
+    [A]sync Python API для сервиса отправки сообщений sms.ru
   </p>
 </p>
 

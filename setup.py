@@ -4,6 +4,13 @@ from setuptools import setup, find_packages
 with open("pypidesc.md", "r", encoding='UTF-8') as f:
     readme = f.read()
 
+keywords = [
+    "async", "sync", "aio", 
+    "sms.ru", "sms", "ru", "smsru", 
+    "sms-verification", "verification", "sms-messages", "messages", 
+    "api", "api-client", 
+    "http"
+]
 
 classifiers = [
     "Programming Language :: Python :: 3",
@@ -27,7 +34,7 @@ with open("requirements.txt", "r", encoding='UTF-8') as f:
 setup(
     name='smsru_api',
     version='1.1.2.post1',
-    description='Python API для сервиса отправки сообщений sms.ru',
+    description='[A]sync Python API для сервиса отправки сообщений sms.ru',
     url="https://github.com/XpycTee/smsru_api",
     long_description=readme,
     long_description_content_type="text/markdown",
@@ -36,7 +43,7 @@ setup(
     author="XpycTee",
     author_email='i@xpyctee.ru',
     classifiers=classifiers,
-    keywords="sms.ru api sms ru",
+    keywords=keywords,
     install_requires=requieres,
     python_requires='>=3.8',
 )
