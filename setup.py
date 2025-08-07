@@ -33,7 +33,7 @@ with open("requirements.txt", "r", encoding='UTF-8') as f:
 
 setup(
     name='smsru_api',
-    version='1.1.2.post1',
+    version='1.2',
     description='[A]sync Python API для сервиса отправки сообщений sms.ru',
     url="https://github.com/XpycTee/smsru_api",
     long_description=readme,
