@@ -1,5 +1,14 @@
 from setuptools import setup, find_packages
 
+NAME = 'smsru_api'
+VERSION = '1.2'
+
+DESCRIPTION = '[A]sync Python API для сервиса отправки сообщений sms.ru'
+URL = 'https://github.com/XpycTee/smsru_api'
+LICENSE = 'Apache License 2.0'
+
+AUTHOR = 'XpycTee'
+AUTHOR_EMAIL = 'i@xpyctee.ru'
 
 with open("pypidesc.md", "r", encoding='UTF-8') as f:
     readme = f.read()
@@ -30,18 +39,17 @@ classifiers = [
 with open("requirements.txt", "r", encoding='UTF-8') as f:
     requieres = [line.rstrip('\n') for line in f]
 
-
 setup(
-    name='smsru_api',
-    version='1.2',
-    description='[A]sync Python API для сервиса отправки сообщений sms.ru',
-    url="https://github.com/XpycTee/smsru_api",
+    name=NAME,
+    version=VERSION,
+    description=DESCRIPTION,
+    url=URL,
     long_description=readme,
     long_description_content_type="text/markdown",
-    license='Apache License 2.0',
+    license=LICENSE,
     packages=find_packages(),
-    author="XpycTee",
-    author_email='i@xpyctee.ru',
+    author=AUTHOR,
+    author_email=AUTHOR_EMAIL,
     classifiers=classifiers,
     keywords=keywords,
     install_requires=requieres,
