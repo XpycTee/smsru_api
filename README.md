@@ -63,7 +63,7 @@ smsru = Client('Your API KEY')
 async_smsru = AsyncClient('Your API KEY')
 ```
 
-**Обратная совместимость с классами до версии 1.0 также поддерживается.**
+**Обратная совместимость с классами до версии 1.0 также поддерживается:**
 ```python 
 from smsru_api import SmsRu, AsyncSmsRu
 
