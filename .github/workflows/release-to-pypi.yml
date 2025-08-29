@@ -8,7 +8,7 @@ jobs:
   publish:
     name: Download release assets & publish to Production PyPI
     runs-on: ubuntu-latest
-    if: startsWith(github.event.release.tag_name, 'v')
+
     steps:
       - name: Prepare folder
         run: |
@@ -47,7 +47,7 @@ jobs:
           ls -la dist
 
       - name: Set up Python (upload)
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 

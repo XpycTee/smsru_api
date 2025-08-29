@@ -27,7 +27,7 @@ class Client(template.BaseClient):
 
     def callcheck_add(self, phone):
         return self._request('/callcheck/add', {'phone': phone})
-    
+
     def callcheck_status(self, check_id):
         return self._request('/callcheck/status', {'check_id': check_id})
 
@@ -54,7 +54,8 @@ class Client(template.BaseClient):
         return self._request('/stoplist/get')
 
     def add_stop_list(self, number, comment=""):
-        return self._request('/stoplist/add', {'stoplist_phone': re.sub(r'^(\+?7|8)|\D', '', number), 'stoplist_text': comment})
+        return self._request('/stoplist/add',
+                             {'stoplist_phone': re.sub(r'^(\+?7|8)|\D', '', number), 'stoplist_text': comment})
 
     def del_stop_list(self, number):
         return self._request('/stoplist/del', {'stoplist_phone': re.sub(r'^(\+?7|8)|\D', '', number)})
