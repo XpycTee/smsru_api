@@ -1,0 +1,44 @@
+[build-system]
+requires = ["setuptools>=65.0", "wheel", "setuptools_scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "smsru_api"
+dynamic = ["version"]
+description = "[A]sync Python API для сервиса отправки сообщений sms.ru"
+readme = "pypidesc.md"
+requires-python = ">=3.8"
+license = { text = "Apache License 2.0" }
+authors = [
+  { name = "XpycTee", email = "i@xpyctee.ru" }
+]
+keywords = ["async", "sync", "aio", "sms.ru", "sms", "ru", "smsru", "sms-verification", "verification", "sms-messages", "messages", "api", "api-client", "http"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: Implementation :: PyPy",
+  "License :: OSI Approved :: Apache Software License",
+]
+
+[project.optional-dependencies]
+dev = ["pytest", "black", "mypy"]
+docs = ["sphinx", "furo"]
+
+[tool.setuptools.packages.find]
+include = ["smsru_api*"]
+exclude = ["tests*"]
+
+[tool.setuptools.package-data]
+"smsru_api" = ["py.typed"]
+
+[tool.setuptools.exclude-package-data]
+"*" = ["*.md", "*.yml", "*.yaml", "*.ini", "*.cfg", ".gitignore", ".gitattributes", ".dockerignore"]
+
+[tool.setuptools_scm]
+version_scheme = "post-release"
+local_scheme = "dirty-tag"

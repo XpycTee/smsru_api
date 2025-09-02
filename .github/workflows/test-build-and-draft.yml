@@ -42,6 +42,7 @@ jobs:
       - name: Checkout the tag
         uses: actions/checkout@v4
         with:
+          fetch-depth: 0
           ref: ${{ github.ref }}
 
       - name: Set up Python (build)
@@ -52,7 +53,7 @@ jobs:
       - name: Install build tools
         run: |
           python -m pip install --upgrade pip
-          python -m pip install build twine
+          python -m pip install build twine setuptools_scm
 
       - name: Build distributions
         run: |
@@ -70,8 +71,23 @@ jobs:
           TWINE_PASSWORD: ${{ secrets.TEST_PYPI_API_TOKEN }}
         run: |
           python -m twine upload --non-interactive --repository-url https://test.pypi.org/legacy/ dist/*
-      
+
+      - name: Set RELEASE_STATE variable
+        id: set_release_state
+        run: |
+          VERSION=$(git describe --tags --abbrev=0);
+          if [[ "$VERSION" =~ beta ]]; then
+            echo "RELEASE_STATE=beta" >> $GITHUB_ENV
+          elif [[ "$VERSION" =~ alpha ]]; then
+            echo "RELEASE_STATE=alpha" >> $GITHUB_ENV
+          elif [[ "$VERSION" =~ rc ]]; then
+            echo "RELEASE_STATE=rc" >> $GITHUB_ENV
+          else
+            echo "RELEASE_STATE=stable" >> $GITHUB_ENV
+          fi
+
       - name: Create (or update) draft release for this tag
+        if: env.RELEASE_STATE == 'stable'
         id: create_release
         uses: actions/create-release@v1
         with:
@@ -79,13 +95,10 @@ jobs:
           release_name: ${{ github.ref_name }}
           draft: true
           body: |
-            # Установка
-            ```
-            pip install smsru-api
-            ```
             ## Изменения:
 
       - name: Upload dist files to draft release (as assets)
+        if: env.RELEASE_STATE == 'stable'
         env:
           UPLOAD_URL: ${{ steps.create_release.outputs.upload_url }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -104,6 +117,7 @@ jobs:
           done
 
       - name: (Optional) Upload dist as workflow artifact (for quick UI download)
+        if: env.RELEASE_STATE == 'stable'
         uses: actions/upload-artifact@v4
         with:
           name: dist-${{ github.ref_name }}
