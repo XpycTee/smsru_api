@@ -133,6 +133,11 @@ response = smsru.send(multi=multi_dict)
 
 Распространяется по лицензии Apache-2.0. См. [LICENSE](https://github.com/XpycTee/smsru_api/blob/main/LICENSE.md) для получения дополнительной информации.
 
+## Ссылки
+
+- GitHub: [smsru_api](https://github.com/XpycTee/smsru_api)
+- PyPI: [smsru-api](https://pypi.org/project/smsru-api/)
+
 ## Авторы
 
-* **XpycTee** - *просто я* - [XpycTee](https://github.com/XpycTee) - *smsru_api*
+- **[XpycTee](https://github.com/XpycTee)**
