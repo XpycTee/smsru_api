@@ -80,7 +80,7 @@ from smsru_api import Client
 
 smsru = Client('Your API KEY')
 
-response = smsru.send('9XXXXXXXX0', '9XXXXXXXX1', message='Message to sms')
+response = smsru.send('79XXXXXXXX0', '79XXXXXXXX1', message='Message to sms')
 ```
 Отправить разный текст на разные номера:
 ```python
@@ -89,8 +89,8 @@ from smsru_api import Client
 smsru = Client('Your API KEY')
 
 multi_dict = {
-    '9XXXXXXXX0': 'Message to sms', 
-    '9XXXXXXXX1': 'Another message to sms'
+    '79XXXXXXXX0': 'Message to sms', 
+    '79XXXXXXXX1': 'Another message to sms'
 }
 
 response = smsru.send(multi=multi_dict)
@@ -101,12 +101,12 @@ response = smsru.send(multi=multi_dict)
     "status": "OK",
     "status_code": 100,
     "sms": {
-        "79XXXXXXXX0": {
+        "779XXXXXXXX0": {
             "status": "OK",
             "status_code": 100,
             "sms_id": "000000-10000000"
         },
-        "79XXXXXXXX1": {
+        "779XXXXXXXX1": {
             "status": "ERROR",
             "status_code": 207,
             "status_text": "На этот номер (или один из номеров) нельзя отправлять сообщения, либо указано более 100 номеров в списке получателей"
@@ -139,7 +139,7 @@ from smsru_api import Client
 
 smsru = Client('Your API KEY')
 
-response = smsru.callcheck_add('9XXXXXXXX0')
+response = smsru.callcheck_add('79XXXXXXXX0')
 ```
 **Ответ от сервера:**
 ```json
@@ -216,7 +216,7 @@ from smsru_api import Client
 
 smsru = Client('Your API KEY')
 
-response = smsru.cost('9XXXXXXXX0', '9XXXXXXXX1', message='Message to sms')
+response = smsru.cost('79XXXXXXXX0', '79XXXXXXXX1', message='Message to sms')
 ```
 **Ответ от сервера:**
 ```json
@@ -224,7 +224,7 @@ response = smsru.cost('9XXXXXXXX0', '9XXXXXXXX1', message='Message to sms')
     "status": "OK",
     "status_code": 100,
     "sms": {
-        "9XXXXXXXXX":  {
+        "79XXXXXXXXX":  {
             "status": "OK", 
             "status_code": 100, 
             "cost": 0, 
@@ -306,7 +306,7 @@ response = smsru.senders()
 from smsru_api import Client
 smsru = Client('Your API KEY')
 
-response = smsru.add_stop_list('9XXXXXXXXX', 'Comment')
+response = smsru.add_stop_list('79XXXXXXXXX', 'Comment')
 ```
 **Ответ от сервера:**
 ```json
@@ -322,7 +322,7 @@ response = smsru.add_stop_list('9XXXXXXXXX', 'Comment')
 from smsru_api import Client
 smsru = Client('Your API KEY')
 
-response = smsru.del_stop_list('9XXXXXXXXX')
+response = smsru.del_stop_list('79XXXXXXXXX')
 ```
 **Ответ от сервера:**
 ```json
@@ -346,8 +346,8 @@ response = smsru.stop_list()
     "status": "OK",
     "status_code": 100,
     "stoplist": {
-        "9XXXXXXXXX": "Comment",
-        "9XXXXXXXX1": "Comment"
+        "79XXXXXXXXX": "Comment",
+        "79XXXXXXXX1": "Comment"
     }
 }
 ```
