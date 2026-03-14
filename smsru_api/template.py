@@ -1,5 +1,5 @@
 import re
-from abc import ABCMeta
+from abc import ABC
 from abc import abstractmethod
 
 import time
@@ -22,7 +22,7 @@ class OutOfTimestamp(Exception):
     """
 
 
-class BaseClient:
+class BaseClient(ABC):
     """Базовый клиент для работы с HTTP API `sms.ru`.
 
     Класс инкапсулирует общие параметры авторизации и логику подготовки данных
@@ -31,8 +31,6 @@ class BaseClient:
 
     :param api_id: API-ключ из личного кабинета `sms.ru`.
     """
-    __metaclass__ = ABCMeta
-
     def __init__(self, api_id: str):
         self._debug_status = False
         self._api_id = api_id
@@ -288,14 +286,15 @@ class BaseClient:
         if multi:
             multi_data = {}
             for key, value in multi.items():
-                multi_data[f'to[{key}]'] = value
+                normalized_number = self._normalize_phone(key)
+                multi_data[f'to[{normalized_number}]'] = value
             data.update(multi_data)
         else:
             if not message:
                 raise ValueError('Не указан текст сообщения')
             if not numbers:
                 raise ValueError('Не указан номер(а) телефона')
-            numbers = [re.sub(r'^(\+?7|8)|\D', '', i) for i in numbers]
+            numbers = [self._normalize_phone(i) for i in numbers]
             data.update({'to': ','.join(numbers)})
             data.update({'text': message})
 
@@ -304,7 +303,8 @@ class BaseClient:
         if from_name is not None:
             data.update({'from': from_name})
         if timestamp is not None:
-            if int(time.time()) - timestamp > 5184000:
+            max_timestamp = int(time.time()) + 5184000
+            if timestamp > max_timestamp:
                 raise OutOfTimestamp('Задержка сообщения не может быть больше 60 дней.')
             data.update({'time': int(timestamp)})
         if ttl is not None:
@@ -323,3 +323,8 @@ class BaseClient:
             data.update({'partner_id': partner_id})
 
         return data  # Возвращаем новый объект данных
+
+    @staticmethod
+    def _normalize_phone(number: str) -> str:
+        """Нормализовать номер телефона к формату API."""
+        return re.sub(r'^(\+?7|8)|\D', '', number)
