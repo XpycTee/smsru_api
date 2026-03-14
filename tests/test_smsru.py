@@ -156,6 +156,69 @@ class TestSmsRu(unittest.TestCase):
         )
         mock_response.raise_for_status.assert_called_once_with()
 
+    @patch('smsru_api.client.httpx.Client')
+    def test_context_manager_reuses_single_httpx_client(self, mock_client_cls):
+        mock_client = MagicMock()
+        mock_response = MagicMock()
+        mock_response.json.return_value = {'status': 'OK'}
+        mock_client.post.return_value = mock_response
+        mock_client_cls.return_value = mock_client
+
+        with self.smsru as smsru:
+            first = smsru.balance()
+            second = smsru.limit()
+
+        self.assertEqual(first['status'], 'OK')
+        self.assertEqual(second['status'], 'OK')
+        mock_client_cls.assert_called_once_with()
+        self.assertEqual(mock_client.post.call_count, 2)
+        mock_client.close.assert_called_once_with()
+
+    @patch('smsru_api.client.httpx.Client')
+    def test_regular_calls_remain_one_shot_after_context_exit(self, mock_client_cls):
+        managed_client = MagicMock()
+        managed_response = MagicMock()
+        managed_response.json.return_value = {'status': 'OK'}
+        managed_client.post.return_value = managed_response
+
+        temporary_context_client = MagicMock()
+        temporary_response = MagicMock()
+        temporary_response.json.return_value = {'status': 'OK'}
+        temporary_context_client.__enter__.return_value = temporary_context_client
+        temporary_context_client.post.return_value = temporary_response
+
+        mock_client_cls.side_effect = [managed_client, temporary_context_client]
+
+        with self.smsru as smsru:
+            smsru.balance()
+
+        response = self.smsru.balance()
+
+        self.assertEqual(response['status'], 'OK')
+        managed_client.close.assert_called_once_with()
+        temporary_context_client.post.assert_called_once()
+        temporary_context_client.__exit__.assert_called_once()
+
+    def test_close_is_idempotent(self):
+        self.smsru.close()
+        self.smsru.close()
+
+    @patch('smsru_api.client.httpx.Client')
+    def test_alias_supports_context_manager(self, mock_client_cls):
+        from smsru_api import SmsRu
+
+        mock_client = MagicMock()
+        mock_response = MagicMock()
+        mock_response.json.return_value = {'status': 'OK'}
+        mock_client.post.return_value = mock_response
+        mock_client_cls.return_value = mock_client
+
+        with SmsRu(self.api_id) as smsru:
+            response = smsru.balance()
+
+        self.assertEqual(response['status'], 'OK')
+        mock_client.close.assert_called_once_with()
+
 
 class TestAsyncSmsRu(unittest.IsolatedAsyncioTestCase):
     def setUp(self):
@@ -230,6 +293,69 @@ class TestAsyncSmsRu(unittest.IsolatedAsyncioTestCase):
             },
         )
         mock_response.raise_for_status.assert_called_once_with()
+
+    @patch('smsru_api.aioclient.httpx.AsyncClient')
+    async def test_async_context_manager_reuses_single_httpx_client(self, mock_client_cls):
+        mock_client = AsyncMock()
+        mock_response = MagicMock()
+        mock_response.json.return_value = {'status': 'OK'}
+        mock_client.post.return_value = mock_response
+        mock_client_cls.return_value = mock_client
+
+        async with self.smsru as smsru:
+            first = await smsru.balance()
+            second = await smsru.limit()
+
+        self.assertEqual(first['status'], 'OK')
+        self.assertEqual(second['status'], 'OK')
+        mock_client_cls.assert_called_once_with()
+        self.assertEqual(mock_client.post.await_count, 2)
+        mock_client.aclose.assert_awaited_once_with()
+
+    @patch('smsru_api.aioclient.httpx.AsyncClient')
+    async def test_regular_async_calls_remain_one_shot_after_context_exit(self, mock_client_cls):
+        managed_client = AsyncMock()
+        managed_response = MagicMock()
+        managed_response.json.return_value = {'status': 'OK'}
+        managed_client.post.return_value = managed_response
+
+        temporary_context_client = AsyncMock()
+        temporary_response = MagicMock()
+        temporary_response.json.return_value = {'status': 'OK'}
+        temporary_context_client.__aenter__.return_value = temporary_context_client
+        temporary_context_client.post.return_value = temporary_response
+
+        mock_client_cls.side_effect = [managed_client, temporary_context_client]
+
+        async with self.smsru as smsru:
+            await smsru.balance()
+
+        response = await self.smsru.balance()
+
+        self.assertEqual(response['status'], 'OK')
+        managed_client.aclose.assert_awaited_once_with()
+        temporary_context_client.post.assert_awaited_once()
+        temporary_context_client.__aexit__.assert_awaited_once()
+
+    async def test_aclose_is_idempotent(self):
+        await self.smsru.aclose()
+        await self.smsru.aclose()
+
+    @patch('smsru_api.aioclient.httpx.AsyncClient')
+    async def test_async_alias_supports_context_manager(self, mock_client_cls):
+        from smsru_api import AsyncSmsRu
+
+        mock_client = AsyncMock()
+        mock_response = MagicMock()
+        mock_response.json.return_value = {'status': 'OK'}
+        mock_client.post.return_value = mock_response
+        mock_client_cls.return_value = mock_client
+
+        async with AsyncSmsRu(self.api_id) as smsru:
+            response = await smsru.balance()
+
+        self.assertEqual(response['status'], 'OK')
+        mock_client.aclose.assert_awaited_once_with()
 
 
 if __name__ == '__main__':

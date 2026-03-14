@@ -15,6 +15,29 @@ class AsyncClient(template.BaseClient):
     def __init__(self, api_id):
         super().__init__(api_id)
         self._base_url = "https://sms.ru"
+        self._client = None
+
+    async def __aenter__(self):
+        if self._client is None:
+            self._client = httpx.AsyncClient()
+        self._managed_mode = True
+        return self
+
+    async def __aexit__(self, exc_type, exc, tb):
+        await self.aclose()
+
+    async def aclose(self):
+        self._managed_mode = False
+        if self._client is not None:
+            await self._client.aclose()
+            self._client = None
+
+    def _get_client(self):
+        if not self.managed_mode:
+            return None
+        if self._client is None:
+            raise RuntimeError("Managed async client is not available. Re-enter the context manager or create a new client.")
+        return self._client
 
     async def _request(self, path, data=None):
         if data is None:
@@ -22,8 +45,14 @@ class AsyncClient(template.BaseClient):
         request_data = self.defaults.copy()
         request_data.update(data)
         url = self._base_url + path
-        async with httpx.AsyncClient() as client:
+        client = self._get_client()
+        if client is not None:
             response = await client.post(url, data=request_data)
+            response.raise_for_status()
+            return response.json()
+
+        async with httpx.AsyncClient() as temporary_client:
+            response = await temporary_client.post(url, data=request_data)
             response.raise_for_status()
             return response.json()
 

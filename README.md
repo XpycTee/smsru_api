@@ -50,6 +50,20 @@ response = smsru.send("79990000000", message="Привет от sms.ru", debug=T
 print(response)
 ```
 
+Для обратной совместимости этот сценарий остается `one-shot`: на каждый
+запрос создается временный HTTP-клиент, поэтому ручное закрытие не требуется.
+
+Если нужно переиспользовать соединение для нескольких запросов подряд,
+используйте контекстный менеджер:
+
+```python
+from smsru_api import Client
+
+with Client("YOUR_API_KEY") as smsru:
+    balance = smsru.balance()
+    limit = smsru.limit()
+```
+
 ### Асинхронный клиент
 
 ```python
@@ -62,6 +76,27 @@ async def main():
     smsru = AsyncClient("YOUR_API_KEY")
     response = await smsru.balance()
     print(response)
+
+
+asyncio.run(main())
+```
+
+Асинхронный клиент тоже сохраняет прежнее поведение без `async with`: каждый
+запрос выполняется через временный `httpx.AsyncClient`.
+
+Для переиспользования соединения в рамках нескольких запросов:
+
+```python
+import asyncio
+
+from smsru_api import AsyncClient
+
+
+async def main():
+    async with AsyncClient("YOUR_API_KEY") as smsru:
+        balance = await smsru.balance()
+        limit = await smsru.limit()
+        return balance, limit
 
 
 asyncio.run(main())

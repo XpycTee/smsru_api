@@ -34,6 +34,7 @@ class BaseClient(ABC):
     def __init__(self, api_id: str):
         self._debug_status = False
         self._api_id = api_id
+        self._managed_mode = False
         self._def_data = {
             'api_id': self.api_id,  # API ключ
             'json': 1,  # Возвращать ответ в формате JSON
@@ -53,6 +54,11 @@ class BaseClient(ABC):
         идентификатор по умолчанию.
         """
         return self._def_data
+
+    @property
+    def managed_mode(self) -> bool:
+        """Показывает, используется ли клиент в режиме контекстного менеджера."""
+        return self._managed_mode
 
     @abstractmethod
     def _request(self, path: str, data: dict) -> dict:
