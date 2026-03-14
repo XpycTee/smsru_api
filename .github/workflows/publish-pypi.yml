@@ -1,0 +1,101 @@
+name: Publish PyPI
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag to publish, for example v1.2.3"
+        required: true
+        type: string
+  release:
+    types: [published]
+
+jobs:
+  publish-pypi:
+    name: Publish to PyPI
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Resolve release tag
+        id: release-tag
+        run: |
+          if [ "${{ github.event_name }}" = "release" ]; then
+            echo "release_tag=${{ github.event.release.tag_name }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "release_tag=${{ inputs.tag }}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Validate release tag format
+        run: |
+          case "${{ steps.release-tag.outputs.release_tag }}" in
+            v*) ;;
+            *)
+              echo "Expected a tag like v1.2.3, got ${{ steps.release-tag.outputs.release_tag }}" >&2
+              exit 1
+              ;;
+          esac
+
+      - name: Checkout release tag
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ steps.release-tag.outputs.release_tag }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install build and publish tools
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install build twine setuptools_scm
+
+      - name: Build distributions
+        run: |
+          python -m build
+
+      - name: Validate distributions
+        run: |
+          python -m twine check dist/*
+
+      - name: Verify tag matches built version
+        run: |
+          python - <<'PY'
+          import glob
+          import pathlib
+
+          tag = "${{ steps.release-tag.outputs.release_tag }}"
+          expected = tag[1:] if tag.startswith("v") else tag
+          wheel = pathlib.Path(glob.glob("dist/*.whl")[0]).name
+          parts = wheel[:-4].split("-")
+          if len(parts) < 2:
+              raise SystemExit(f"Unexpected wheel filename: {wheel}")
+          actual = parts[1]
+          if actual != expected:
+              raise SystemExit(f"Tag version {expected!r} does not match wheel version {actual!r}")
+          print(f"Verified version {actual} from {wheel}")
+          PY
+
+      - name: Smoke test wheel install in clean environment
+        run: |
+          python -m venv .venv-smoke
+          . .venv-smoke/bin/activate
+          python -m pip install --upgrade pip
+          python -m pip install --no-deps dist/*.whl
+          python - <<'PY'
+          import smsru_api
+          from smsru_api import AsyncClient, Client
+
+          assert smsru_api is not None
+          assert Client is not None
+          assert AsyncClient is not None
+          print("Smoke import passed")
+          PY
+
+      - name: Publish to PyPI
+        run: |
+          python -m twine upload --non-interactive dist/*
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
