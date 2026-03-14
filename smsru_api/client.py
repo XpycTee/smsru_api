@@ -6,6 +6,8 @@ from smsru_api import template
 
 
 class Client(template.BaseClient):
+    """Синхронный клиент для работы с API `sms.ru`."""
+
     def __init__(self, api_id):
         super().__init__(api_id)
         self._base_url = "https://sms.ru"

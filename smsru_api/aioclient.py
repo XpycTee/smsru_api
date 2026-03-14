@@ -6,6 +6,12 @@ from smsru_api import template
 
 
 class AsyncClient(template.BaseClient):
+    """Асинхронный клиент для работы с API `sms.ru`.
+
+    Все публичные методы класса являются coroutine и должны вызываться через
+    `await`.
+    """
+
     def __init__(self, api_id):
         super().__init__(api_id)
         self._base_url = "https://sms.ru"
