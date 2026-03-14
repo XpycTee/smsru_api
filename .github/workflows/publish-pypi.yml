@@ -82,7 +82,7 @@ jobs:
           python -m venv .venv-smoke
           . .venv-smoke/bin/activate
           python -m pip install --upgrade pip
-          python -m pip install --no-deps dist/*.whl
+          python -m pip install dist/*.whl
           python - <<'PY'
           import smsru_api
           from smsru_api import AsyncClient, Client
