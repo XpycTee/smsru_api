@@ -67,8 +67,8 @@ response = await smsru.balance()
 
 Подробное руководство хранится в репозитории:
 
-- [README.md](README.md) — быстрый старт
-- [docs/README.md](docs/README.md) — полная документация
+- [README.md](https://github.com/XpycTee/smsru_api/blob/main/README.md) — быстрый старт
+- [docs/README.md](https://github.com/XpycTee/smsru_api/blob/main/docs/README.md) — полная документация
 
 ## Ссылки
 
