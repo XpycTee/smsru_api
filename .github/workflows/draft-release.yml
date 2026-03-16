@@ -106,6 +106,7 @@ jobs:
     name: Publish to Test PyPI
     runs-on: ubuntu-latest
     needs: build
+    environment: testpypi
     
     steps:
       - name: Download artifact (dist) for inspection
@@ -122,23 +123,12 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install "packaging>=24.2" twine
 
-      - name: Check TestPyPI secret presence
-        env:
-          TWINE_PASSWORD: ${{ secrets.TEST_PYPI_API_TOKEN }}
-        run: |
-          if [ -z "$TWINE_PASSWORD" ]; then
-            echo "TEST_PYPI_API_TOKEN is empty or unavailable"
-            exit 1
-          fi
-          echo "::add-mask::$TWINE_PASSWORD"
-          echo "TEST_PYPI_API_TOKEN is available, length=${#TWINE_PASSWORD}"
-
       - name: Publish to Test PyPI
         run: |
           python -m twine upload --verbose --non-interactive --skip-existing --repository-url https://test.pypi.org/legacy/ dist/*
         env:
           TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.TEST_PYPI_API_TOKEN }}
+          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
 
   draft-release:
     name: Create draft release with assets
