@@ -124,3 +124,6 @@ dmypy.json
 
 # PyPI
 .pypirc
+
+# Local tooling logs
+job-logs.txt

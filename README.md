@@ -209,7 +209,6 @@ from smsru_api import OutOfPhoneNumbers, OutOfTimestamp
 
 ## Структура документации
 
-- [CHANGELOG.md](CHANGELOG.md) — заметки по релизам и user-facing изменениям
 - [README.md](README.md) — быстрый старт и обзор API
 - [docs/README.md](docs/README.md) — подробная документация по возможностям
 - [pypidesc.md](pypidesc.md) — краткое описание для PyPI
