@@ -159,6 +159,16 @@ class BaseClientPayloadTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'Неверно указан номер телефона'):
             self.client._collect_data((), multi={'abc': 'Test message'})
 
+    def test_collect_data_rejects_multi_collision_after_normalization(self):
+        with self.assertRaisesRegex(ValueError, 'коллизия номеров после нормализации'):
+            self.client._collect_data(
+                (),
+                multi={
+                    '+7 (999) 000-00-00': 'First',
+                    '8 (999) 000-00-00': 'Second',
+                },
+            )
+
     def test_sync_and_async_clients_build_same_payload(self):
         sync_client = Client(self.api_id)
         async_client = AsyncClient(self.api_id)
@@ -241,6 +251,18 @@ class TestSmsRu(unittest.TestCase):
         with patch('smsru_api.client.httpx.Client.post') as mock_post:
             with self.assertRaisesRegex(ValueError, 'Неверно указан номер телефона'):
                 self.smsru.send('abc', message='Test message')
+
+        mock_post.assert_not_called()
+
+    def test_send_rejects_multi_collision_before_request(self):
+        with patch('smsru_api.client.httpx.Client.post') as mock_post:
+            with self.assertRaisesRegex(ValueError, 'коллизия номеров после нормализации'):
+                self.smsru.send(
+                    multi={
+                        '+7 (999) 999-99-99': 'First',
+                        '8 (999) 999-99-99': 'Second',
+                    }
+                )
 
         mock_post.assert_not_called()
 
@@ -536,6 +558,18 @@ class TestAsyncSmsRu(unittest.IsolatedAsyncioTestCase):
         with patch('smsru_api.aioclient.httpx.AsyncClient.post', new_callable=AsyncMock) as mock_post:
             with self.assertRaisesRegex(ValueError, 'Неверно указан номер телефона'):
                 await self.smsru.send('abc', message='Test message')
+
+        mock_post.assert_not_awaited()
+
+    async def test_send_rejects_multi_collision_before_request(self):
+        with patch('smsru_api.aioclient.httpx.AsyncClient.post', new_callable=AsyncMock) as mock_post:
+            with self.assertRaisesRegex(ValueError, 'коллизия номеров после нормализации'):
+                await self.smsru.send(
+                    multi={
+                        '+7 (999) 999-99-99': 'First',
+                        '8 (999) 999-99-99': 'Second',
+                    }
+                )
 
         mock_post.assert_not_awaited()
 

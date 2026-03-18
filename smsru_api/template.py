@@ -293,7 +293,10 @@ class BaseClient(ABC):
             multi_data = {}
             for key, value in multi.items():
                 normalized_number = self._normalize_and_validate_phone(key)
-                multi_data[f'to[{normalized_number}]'] = value
+                api_key = f'to[{normalized_number}]'
+                if api_key in multi_data:
+                    raise ValueError('Обнаружена коллизия номеров после нормализации в multi')
+                multi_data[api_key] = value
             data.update(multi_data)
         else:
             if not message:
