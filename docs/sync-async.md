@@ -86,3 +86,12 @@ from smsru_api import SmsRu, AsyncSmsRu
 smsru = SmsRu("YOUR_API_KEY")
 async_smsru = AsyncSmsRu("YOUR_API_KEY")
 ```
+
+## Публичные исключения
+
+Если нужно обрабатывать лимиты получателей или некорректные временные
+параметры, импортируйте исключения из корня пакета:
+
+```python
+from smsru_api import OutOfPhoneNumbers, OutOfTimestamp
+```

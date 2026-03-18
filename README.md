@@ -142,6 +142,10 @@ response = smsru.send(
 )
 ```
 
+Ключи `multi` проходят ту же нормализацию, что и обычные номера. Если после
+нормализации два ключа схлопываются в один и тот же номер, библиотека
+выбросит `ValueError` до отправки запроса.
+
 Дополнительные параметры `send()`:
 
 - `from_name` — имя отправителя, согласованное с администрацией
@@ -170,7 +174,7 @@ response = smsru.send(
 
 ### Сообщения
 
-- `send(...)` — отправка SMS
+- `send(*numbers, message=None, multi=None, from_name=None, ip_address=None, timestamp=None, ttl=None, day_time=False, translit=False, test=None, debug=False, partner_id=None)` — отправка SMS
 - `cost(*numbers, message=...)` — расчет стоимости
 - `status(sms_id)` — статус сообщения
 - `OutOfPhoneNumbers`, `OutOfTimestamp` — публичные исключения библиотеки
