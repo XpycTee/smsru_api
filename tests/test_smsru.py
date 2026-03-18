@@ -141,6 +141,24 @@ class BaseClientPayloadTests(unittest.TestCase):
         self.assertEqual(self.client._normalize_phone('+7 (999) 123-45-67'), '9991234567')
         self.assertEqual(self.client._normalize_phone('8 (999) 123-45-67'), '9991234567')
 
+    def test_normalize_and_validate_phone_accepts_valid_number(self):
+        self.assertEqual(self.client._normalize_and_validate_phone('+7 (999) 123-45-67'), '9991234567')
+
+    def test_normalize_and_validate_phone_rejects_invalid_number(self):
+        with self.assertRaisesRegex(ValueError, 'Неверно указан номер телефона'):
+            self.client._normalize_and_validate_phone('abc')
+
+        with self.assertRaisesRegex(ValueError, 'Неверно указан номер телефона'):
+            self.client._normalize_and_validate_phone('8 999')
+
+    def test_collect_data_rejects_invalid_number(self):
+        with self.assertRaisesRegex(ValueError, 'Неверно указан номер телефона'):
+            self.client._collect_data(('abc',), message='Test message')
+
+    def test_collect_data_rejects_invalid_multi_number(self):
+        with self.assertRaisesRegex(ValueError, 'Неверно указан номер телефона'):
+            self.client._collect_data((), multi={'abc': 'Test message'})
+
     def test_sync_and_async_clients_build_same_payload(self):
         sync_client = Client(self.api_id)
         async_client = AsyncClient(self.api_id)
@@ -218,6 +236,20 @@ class TestSmsRu(unittest.TestCase):
             },
             debug=True,
         )
+
+    def test_send_rejects_invalid_number_before_request(self):
+        with patch('smsru_api.client.httpx.Client.post') as mock_post:
+            with self.assertRaisesRegex(ValueError, 'Неверно указан номер телефона'):
+                self.smsru.send('abc', message='Test message')
+
+        mock_post.assert_not_called()
+
+    def test_cost_rejects_invalid_number_before_request(self):
+        with patch('smsru_api.client.httpx.Client.post') as mock_post:
+            with self.assertRaisesRegex(ValueError, 'Неверно указан номер телефона'):
+                self.smsru.cost('abc', message='Test message')
+
+        mock_post.assert_not_called()
 
     def test_balance_posts_default_payload(self):
         self.assert_request_method('balance', '/my/balance', self.expected_defaults())
@@ -297,6 +329,13 @@ class TestSmsRu(unittest.TestCase):
             '8 (999) 999-99-99',
         )
 
+    def test_add_stop_list_rejects_invalid_number_before_request(self):
+        with patch('smsru_api.client.httpx.Client.post') as mock_post:
+            with self.assertRaisesRegex(ValueError, 'Неверно указан номер телефона'):
+                self.smsru.add_stop_list('abc')
+
+        mock_post.assert_not_called()
+
     def test_del_stop_list_posts_normalized_payload(self):
         self.assert_request_method(
             'del_stop_list',
@@ -307,6 +346,13 @@ class TestSmsRu(unittest.TestCase):
             },
             '8 (999) 999-99-99',
         )
+
+    def test_del_stop_list_rejects_invalid_number_before_request(self):
+        with patch('smsru_api.client.httpx.Client.post') as mock_post:
+            with self.assertRaisesRegex(ValueError, 'Неверно указан номер телефона'):
+                self.smsru.del_stop_list('abc')
+
+        mock_post.assert_not_called()
 
     def test_callbacks_posts_default_payload(self):
         self.assert_request_method('callbacks', '/callback/get', self.expected_defaults())
@@ -486,6 +532,20 @@ class TestAsyncSmsRu(unittest.IsolatedAsyncioTestCase):
             debug=True,
         )
 
+    async def test_send_rejects_invalid_number_before_request(self):
+        with patch('smsru_api.aioclient.httpx.AsyncClient.post', new_callable=AsyncMock) as mock_post:
+            with self.assertRaisesRegex(ValueError, 'Неверно указан номер телефона'):
+                await self.smsru.send('abc', message='Test message')
+
+        mock_post.assert_not_awaited()
+
+    async def test_cost_rejects_invalid_number_before_request(self):
+        with patch('smsru_api.aioclient.httpx.AsyncClient.post', new_callable=AsyncMock) as mock_post:
+            with self.assertRaisesRegex(ValueError, 'Неверно указан номер телефона'):
+                await self.smsru.cost('abc', message='Test message')
+
+        mock_post.assert_not_awaited()
+
     async def test_balance_posts_default_payload(self):
         await self.assert_request_method('balance', '/my/balance', self.expected_defaults())
 
@@ -564,6 +624,13 @@ class TestAsyncSmsRu(unittest.IsolatedAsyncioTestCase):
             '8 (999) 999-99-99',
         )
 
+    async def test_add_stop_list_rejects_invalid_number_before_request(self):
+        with patch('smsru_api.aioclient.httpx.AsyncClient.post', new_callable=AsyncMock) as mock_post:
+            with self.assertRaisesRegex(ValueError, 'Неверно указан номер телефона'):
+                await self.smsru.add_stop_list('abc')
+
+        mock_post.assert_not_awaited()
+
     async def test_del_stop_list_posts_normalized_payload(self):
         await self.assert_request_method(
             'del_stop_list',
@@ -574,6 +641,13 @@ class TestAsyncSmsRu(unittest.IsolatedAsyncioTestCase):
             },
             '8 (999) 999-99-99',
         )
+
+    async def test_del_stop_list_rejects_invalid_number_before_request(self):
+        with patch('smsru_api.aioclient.httpx.AsyncClient.post', new_callable=AsyncMock) as mock_post:
+            with self.assertRaisesRegex(ValueError, 'Неверно указан номер телефона'):
+                await self.smsru.del_stop_list('abc')
+
+        mock_post.assert_not_awaited()
 
     async def test_callbacks_posts_default_payload(self):
         await self.assert_request_method('callbacks', '/callback/get', self.expected_defaults())

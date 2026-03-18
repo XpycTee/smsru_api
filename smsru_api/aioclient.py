@@ -1,5 +1,3 @@
-import re
-
 import httpx
 
 from smsru_api import template
@@ -89,11 +87,11 @@ class AsyncClient(template.BaseClient):
         return await self._request('/stoplist/get')
 
     async def add_stop_list(self, number, comment=""):
-        data = {'stoplist_phone': re.sub(r'^(\+?7|8)|\D', '', number), 'stoplist_text': comment}
+        data = {'stoplist_phone': self._normalize_and_validate_phone(number), 'stoplist_text': comment}
         return await self._request('/stoplist/add', data)
 
     async def del_stop_list(self, number):
-        data = {'stoplist_phone': re.sub(r'^(\+?7|8)|\D', '', number)}
+        data = {'stoplist_phone': self._normalize_and_validate_phone(number)}
         return await self._request('/stoplist/del', data)
 
     async def callbacks(self):

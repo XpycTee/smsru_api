@@ -292,7 +292,7 @@ class BaseClient(ABC):
         if multi:
             multi_data = {}
             for key, value in multi.items():
-                normalized_number = self._normalize_phone(key)
+                normalized_number = self._normalize_and_validate_phone(key)
                 multi_data[f'to[{normalized_number}]'] = value
             data.update(multi_data)
         else:
@@ -300,7 +300,7 @@ class BaseClient(ABC):
                 raise ValueError('Не указан текст сообщения')
             if not numbers:
                 raise ValueError('Не указан номер(а) телефона')
-            numbers = [self._normalize_phone(i) for i in numbers]
+            numbers = [self._normalize_and_validate_phone(i) for i in numbers]
             data.update({'to': ','.join(numbers)})
             data.update({'text': message})
 
@@ -334,3 +334,11 @@ class BaseClient(ABC):
     def _normalize_phone(number: str) -> str:
         """Нормализовать номер телефона к формату API."""
         return re.sub(r'^(\+?7|8)|\D', '', number)
+
+    @classmethod
+    def _normalize_and_validate_phone(cls, number: str) -> str:
+        """Нормализовать номер и проверить его базовую корректность."""
+        normalized_number = cls._normalize_phone(number)
+        if not normalized_number or not normalized_number.isdigit() or len(normalized_number) != 10:
+            raise ValueError('Неверно указан номер телефона')
+        return normalized_number
