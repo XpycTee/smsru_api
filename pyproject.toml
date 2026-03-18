@@ -27,7 +27,8 @@ classifiers = [
 ]
 
 [project.optional-dependencies]
-dev = ["pytest", "black", "mypy"]
+dev = ["pytest", "python-dotenv", "black", "mypy"]
+test = ["pytest", "python-dotenv"]
 docs = ["sphinx", "furo"]
 
 [tool.setuptools.packages.find]
@@ -43,3 +44,9 @@ exclude = ["tests*"]
 [tool.setuptools_scm]
 version_scheme = "post-release"
 local_scheme = "dirty-tag"
+
+[tool.pytest.ini_options]
+addopts = "--ignore=tests/test_live.py -m 'not live'"
+markers = [
+  "live: tests that exercise the real sms.ru API and require explicit opt-in",
+]

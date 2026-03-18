@@ -196,10 +196,37 @@ response = smsru.send(
 
 ## Структура документации
 
+- [CHANGELOG.md](CHANGELOG.md) — заметки по релизам и user-facing изменениям
 - [README.md](README.md) — быстрый старт и обзор API
 - [docs/README.md](docs/README.md) — подробная документация по возможностям
 - [pypidesc.md](pypidesc.md) — краткое описание для PyPI
 - docstring'и в коде — справка по параметрам и ограничениям в IDE
+
+## Тесты
+
+Для локальной разработки:
+
+```sh
+pip install -e ".[test]"
+pytest
+```
+
+Обычный `pytest` запускает только unit-тесты. Live-проверки вынесены в
+отдельный opt-in сценарий и требуют переменные окружения:
+
+- `SMSRU_API_ID`
+- `SMSRU_TEST_PHONE`
+- `AUTO_TEST=true` — опционально, чтобы пропустить сценарии `callcheck_*`
+- `SMSRU_LOAD_DOTENV=true` — опционально, чтобы подгрузить значения из `.env`
+
+Явный запуск live-тестов:
+
+```sh
+pytest tests/test_live.py -m live
+```
+
+Если установлен `python-dotenv`, live-тесты смогут подгрузить значения из
+локального `.env`, но только при `SMSRU_LOAD_DOTENV=true`.
 
 ## Подробная документация
 
