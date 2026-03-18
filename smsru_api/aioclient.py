@@ -5,7 +5,7 @@ import httpx
 from smsru_api import template
 
 
-class AsyncClient(template.BaseClient):
+class AsyncClient(template.AsyncBaseClient):
     """Асинхронный клиент для работы с API `sms.ru`.
 
     Все публичные методы класса являются coroutine и должны вызываться через
@@ -116,11 +116,14 @@ class AsyncClient(template.BaseClient):
         return await self._request('/stoplist/get')
 
     async def add_stop_list(self, number: str, comment: str = "") -> template.JsonDict:
-        data = {'stoplist_phone': self._normalize_and_validate_phone(number), 'stoplist_text': comment}
+        data: template.RequestData = {
+            'stoplist_phone': self._normalize_and_validate_phone(number),
+            'stoplist_text': comment,
+        }
         return await self._request('/stoplist/add', data)
 
     async def del_stop_list(self, number: str) -> template.JsonDict:
-        data = {'stoplist_phone': self._normalize_and_validate_phone(number)}
+        data: template.RequestData = {'stoplist_phone': self._normalize_and_validate_phone(number)}
         return await self._request('/stoplist/del', data)
 
     async def callbacks(self) -> template.JsonDict:

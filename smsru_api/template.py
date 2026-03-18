@@ -8,7 +8,8 @@ import ipaddress
 
 
 JsonDict = Dict[str, Any]
-RequestData = Dict[str, Any]
+RequestValue = int | str
+RequestData = Dict[str, RequestValue]
 MultiMessageMap = Mapping[str, str]
 PhoneNumbers = Tuple[str, ...]
 
@@ -29,12 +30,12 @@ class OutOfTimestamp(Exception):
     """
 
 
-class BaseClient(ABC):
-    """Базовый клиент для работы с HTTP API `sms.ru`.
+class _BaseClientCommon:
+    """Общий helper-слой для синхронного и асинхронного клиентов.
 
     Класс инкапсулирует общие параметры авторизации и логику подготовки данных
-    для запросов. Публичные методы реализуются в синхронном и асинхронном
-    клиентах поверх этого базового интерфейса.
+    для запросов. Публичные sync/async интерфейсы описываются отдельными
+    базовыми классами поверх этого общего helper-слоя.
 
     :param api_id: API-ключ из личного кабинета `sms.ru`.
     """
@@ -66,6 +67,128 @@ class BaseClient(ABC):
     def managed_mode(self) -> bool:
         """Показывает, используется ли клиент в режиме контекстного менеджера."""
         return self._managed_mode
+
+    def _collect_data(
+        self,
+        numbers: PhoneNumbers,
+        message: Optional[str] = None,
+        multi: Optional[MultiMessageMap] = None,
+        from_name: Optional[str] = None,
+        ip_address: Optional[str] = None,
+        timestamp: Optional[int] = None,
+        ttl: Optional[int] = None,
+        day_time: bool = False,
+        translit: bool = False,
+        test: Optional[bool] = None,
+        debug: bool = False,
+        partner_id: Optional[int] = None,
+    ) -> RequestData:
+        """Собрать и провалидировать тело запроса для SMS-методов.
+
+        Метод используется внутренне клиентами `Client` и `AsyncClient`.
+        Поддерживает два сценария:
+
+        - общий текст сообщения через `numbers` и `message`;
+        - словарь `multi` для разных текстов на разные номера.
+
+        При использовании `numbers` каждый номер очищается от нецифровых
+        символов и ведущего кода `+7` или `8`. В одном запросе разрешено не
+        более 100 получателей.
+
+        :param numbers: Кортеж номеров, переданных позиционными аргументами.
+        :param message: Общий текст сообщения.
+        :param multi: Словарь вида `{номер: текст}`.
+        :param from_name: Имя отправителя.
+        :param ip_address: IP-адрес конечного пользователя.
+        :param timestamp: Unix timestamp для отложенной отправки.
+        :param ttl: Срок жизни сообщения в минутах.
+        :param day_time: Учитывать дневное время получателя.
+        :param translit: Включить транслитерацию.
+        :param test: Включить тестовый режим API.
+        :param debug: Включить локальный debug-режим клиента.
+        :param partner_id: Переопределить партнерский идентификатор.
+        :return: Новый словарь данных, подготовленный к отправке в API.
+        :raises OutOfPhoneNumbers: Если передано больше 100 получателей.
+        :raises OutOfTimestamp: Если `timestamp` старше допустимого окна или
+            `ttl` находится вне диапазона 1..1440.
+        :raises ValueError: Если отсутствуют обязательные аргументы или IP не
+            проходит проверку.
+        """
+        if multi is None:
+            multi = {}
+        if len(numbers) > 100 or len(multi) > 100:
+            raise OutOfPhoneNumbers('Количество номеров телефонов не может быть больше 100 за один запрос.')
+
+        data: RequestData = {}
+
+        if ip_address is not None:
+            converted_ip = ipaddress.ip_address(ip_address)
+            if not (type(converted_ip) is ipaddress.IPv4Address or type(converted_ip) is ipaddress.IPv6Address):
+                raise ValueError('Неверно указан ip адрес.')
+        if test is None:
+            test = debug
+        self._debug_status = debug
+
+        if multi:
+            multi_data: RequestData = {}
+            for key, value in multi.items():
+                normalized_number = self._normalize_and_validate_phone(key)
+                api_key = f'to[{normalized_number}]'
+                if api_key in multi_data:
+                    raise ValueError('Обнаружена коллизия номеров после нормализации в multi')
+                multi_data[api_key] = value
+            data.update(multi_data)
+        else:
+            if not message:
+                raise ValueError('Не указан текст сообщения')
+            if not numbers:
+                raise ValueError('Не указан номер(а) телефона')
+            normalized_numbers = [self._normalize_and_validate_phone(number) for number in numbers]
+            data.update({'to': ','.join(normalized_numbers)})
+            data.update({'text': message})
+
+        if test:
+            data.update({'test': 1})
+        if from_name is not None:
+            data.update({'from': from_name})
+        if timestamp is not None:
+            max_timestamp = int(time.time()) + 5184000
+            if timestamp > max_timestamp:
+                raise OutOfTimestamp('Задержка сообщения не может быть больше 60 дней.')
+            data.update({'time': int(timestamp)})
+        if ttl is not None:
+            if ttl > 1440:
+                raise OutOfTimestamp('TTL не может быть больше 1440 минут.')
+            elif ttl < 1:
+                raise OutOfTimestamp('TTL не может быть меньше 1 минуты.')
+            data.update({'ttl': int(ttl)})
+        if day_time:
+            data.update({'daytime': 1})
+        if ip_address is not None:
+            data.update({'ip': ip_address})
+        if translit:
+            data.update({'translit': 1})
+        if partner_id is not None:
+            data.update({'partner_id': partner_id})
+
+        return data
+
+    @staticmethod
+    def _normalize_phone(number: str) -> str:
+        """Нормализовать номер телефона к формату API."""
+        return re.sub(r'^(\+?7|8)|\D', '', number)
+
+    @classmethod
+    def _normalize_and_validate_phone(cls, number: str) -> str:
+        """Нормализовать номер и проверить его базовую корректность."""
+        normalized_number = cls._normalize_phone(number)
+        if not normalized_number or not normalized_number.isdigit() or len(normalized_number) != 10:
+            raise ValueError('Неверно указан номер телефона')
+        return normalized_number
+
+
+class BaseClient(_BaseClientCommon, ABC):
+    """Базовый синхронный клиент для работы с HTTP API `sms.ru`."""
 
     @abstractmethod
     def _request(self, path: str, data: Optional[RequestData] = None) -> JsonDict:
@@ -258,9 +381,19 @@ class BaseClient(ABC):
         """
         pass
 
-    def _collect_data(
+
+class AsyncBaseClient(_BaseClientCommon, ABC):
+    """Базовый асинхронный клиент для работы с HTTP API `sms.ru`."""
+
+    @abstractmethod
+    async def _request(self, path: str, data: Optional[RequestData] = None) -> JsonDict:
+        """Отправить подготовленный запрос на сервер `sms.ru`."""
+        pass
+
+    @abstractmethod
+    async def send(
         self,
-        numbers: PhoneNumbers,
+        *numbers: str,
         message: Optional[str] = None,
         multi: Optional[MultiMessageMap] = None,
         from_name: Optional[str] = None,
@@ -272,106 +405,62 @@ class BaseClient(ABC):
         test: Optional[bool] = None,
         debug: bool = False,
         partner_id: Optional[int] = None,
-    ) -> RequestData:
-        """Собрать и провалидировать тело запроса для SMS-методов.
+    ) -> JsonDict:
+        """Отправить SMS-сообщение через API `sms.ru`."""
+        pass
 
-        Метод используется внутренне клиентами `Client` и `AsyncClient`.
-        Поддерживает два сценария:
+    @abstractmethod
+    async def callcheck_add(self, phone: str) -> JsonDict:
+        pass
 
-        - общий текст сообщения через `numbers` и `message`;
-        - словарь `multi` для разных текстов на разные номера.
+    @abstractmethod
+    async def callcheck_status(self, check_id: str) -> JsonDict:
+        pass
 
-        При использовании `numbers` каждый номер очищается от нецифровых
-        символов и ведущего кода `+7` или `8`. В одном запросе разрешено не
-        более 100 получателей.
+    @abstractmethod
+    async def status(self, sms_id: str) -> JsonDict:
+        pass
 
-        :param numbers: Кортеж номеров, переданных позиционными аргументами.
-        :param message: Общий текст сообщения.
-        :param multi: Словарь вида `{номер: текст}`.
-        :param from_name: Имя отправителя.
-        :param ip_address: IP-адрес конечного пользователя.
-        :param timestamp: Unix timestamp для отложенной отправки.
-        :param ttl: Срок жизни сообщения в минутах.
-        :param day_time: Учитывать дневное время получателя.
-        :param translit: Включить транслитерацию.
-        :param test: Включить тестовый режим API.
-        :param debug: Включить локальный debug-режим клиента.
-        :param partner_id: Переопределить партнерский идентификатор.
-        :return: Новый словарь данных, подготовленный к отправке в API.
-        :raises OutOfPhoneNumbers: Если передано больше 100 получателей.
-        :raises OutOfTimestamp: Если `timestamp` старше допустимого окна или
-            `ttl` находится вне диапазона 1..1440.
-        :raises ValueError: Если отсутствуют обязательные аргументы или IP не
-            проходит проверку.
-        """
-        if multi is None:
-            multi = {}
-        if len(numbers) > 100 or len(multi) > 100:
-            raise OutOfPhoneNumbers('Количество номеров телефонов не может быть больше 100 за один запрос.')
+    @abstractmethod
+    async def cost(self, *numbers: str, message: str) -> JsonDict:
+        pass
 
-        data = {}
+    @abstractmethod
+    async def balance(self) -> JsonDict:
+        pass
 
-        if ip_address is not None:
-            converted_ip = ipaddress.ip_address(ip_address)
-            if not (type(converted_ip) is ipaddress.IPv4Address or type(converted_ip) is ipaddress.IPv6Address):
-                raise ValueError('Неверно указан ip адрес.')
-        if test is None:
-            test = debug
-        self._debug_status = debug
+    @abstractmethod
+    async def limit(self) -> JsonDict:
+        pass
 
-        if multi:
-            multi_data = {}
-            for key, value in multi.items():
-                normalized_number = self._normalize_and_validate_phone(key)
-                api_key = f'to[{normalized_number}]'
-                if api_key in multi_data:
-                    raise ValueError('Обнаружена коллизия номеров после нормализации в multi')
-                multi_data[api_key] = value
-            data.update(multi_data)
-        else:
-            if not message:
-                raise ValueError('Не указан текст сообщения')
-            if not numbers:
-                raise ValueError('Не указан номер(а) телефона')
-            numbers = [self._normalize_and_validate_phone(i) for i in numbers]
-            data.update({'to': ','.join(numbers)})
-            data.update({'text': message})
+    @abstractmethod
+    async def free(self) -> JsonDict:
+        pass
 
-        if test:
-            data.update({'test': 1})
-        if from_name is not None:
-            data.update({'from': from_name})
-        if timestamp is not None:
-            max_timestamp = int(time.time()) + 5184000
-            if timestamp > max_timestamp:
-                raise OutOfTimestamp('Задержка сообщения не может быть больше 60 дней.')
-            data.update({'time': int(timestamp)})
-        if ttl is not None:
-            if ttl > 1440:
-                raise OutOfTimestamp('TTL не может быть больше 1440 минут.')
-            elif ttl < 1:
-                raise OutOfTimestamp('TTL не может быть меньше 1 минуты.')
-            data.update({'ttl': int(ttl)})
-        if day_time:
-            data.update({'daytime': 1})
-        if ip_address is not None:
-            data.update({'ip': ip_address})
-        if translit:
-            data.update({'translit': 1})
-        if partner_id is not None:
-            data.update({'partner_id': partner_id})
+    @abstractmethod
+    async def senders(self) -> JsonDict:
+        pass
 
-        return data  # Возвращаем новый объект данных
+    @abstractmethod
+    async def stop_list(self) -> JsonDict:
+        pass
 
-    @staticmethod
-    def _normalize_phone(number: str) -> str:
-        """Нормализовать номер телефона к формату API."""
-        return re.sub(r'^(\+?7|8)|\D', '', number)
+    @abstractmethod
+    async def add_stop_list(self, number: str, comment: str = "") -> JsonDict:
+        pass
 
-    @classmethod
-    def _normalize_and_validate_phone(cls, number: str) -> str:
-        """Нормализовать номер и проверить его базовую корректность."""
-        normalized_number = cls._normalize_phone(number)
-        if not normalized_number or not normalized_number.isdigit() or len(normalized_number) != 10:
-            raise ValueError('Неверно указан номер телефона')
-        return normalized_number
+    @abstractmethod
+    async def del_stop_list(self, number: str) -> JsonDict:
+        pass
+
+    @abstractmethod
+    async def callbacks(self) -> JsonDict:
+        pass
+
+    @abstractmethod
+    async def add_callback(self, url: str) -> JsonDict:
+        pass
+
+    @abstractmethod
+    async def del_callback(self, url: str) -> JsonDict:
+        pass
