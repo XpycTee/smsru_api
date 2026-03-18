@@ -1,8 +1,10 @@
+import inspect
 import unittest
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import httpx
 
+import smsru_api.template as template_module
 from smsru_api import AsyncClient, Client, OutOfPhoneNumbers, OutOfTimestamp
 
 
@@ -19,6 +21,23 @@ class BaseClientPayloadTests(unittest.TestCase):
     def test_public_package_exports_exceptions(self):
         self.assertIs(OutOfPhoneNumbers, __import__('smsru_api').OutOfPhoneNumbers)
         self.assertIs(OutOfTimestamp, __import__('smsru_api').OutOfTimestamp)
+
+    def test_send_signatures_are_explicit_and_aligned(self):
+        base_params = list(inspect.signature(template_module.BaseClient.send).parameters.values())[1:]
+        sync_params = list(inspect.signature(Client.send).parameters.values())[1:]
+        async_params = list(inspect.signature(AsyncClient.send).parameters.values())[1:]
+
+        self.assertEqual(base_params, sync_params)
+        self.assertEqual(sync_params, async_params)
+        self.assertNotIn(inspect.Parameter.VAR_KEYWORD, [param.kind for param in sync_params])
+
+    def test_cost_signatures_are_aligned(self):
+        base_params = list(inspect.signature(template_module.BaseClient.cost).parameters.values())[1:]
+        sync_params = list(inspect.signature(Client.cost).parameters.values())[1:]
+        async_params = list(inspect.signature(AsyncClient.cost).parameters.values())[1:]
+
+        self.assertEqual(base_params, sync_params)
+        self.assertEqual(sync_params, async_params)
 
     def test_collect_data_accepts_timestamp_on_upper_boundary(self):
         timestamp = 5_184_000 + 1_000

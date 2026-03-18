@@ -1,9 +1,16 @@
 import re
 from abc import ABC
 from abc import abstractmethod
+from typing import Any, Dict, Mapping, Optional, Tuple
 
 import time
 import ipaddress
+
+
+JsonDict = Dict[str, Any]
+RequestData = Dict[str, Any]
+MultiMessageMap = Mapping[str, str]
+PhoneNumbers = Tuple[str, ...]
 
 
 class OutOfPhoneNumbers(Exception):
@@ -47,7 +54,7 @@ class BaseClient(ABC):
         return self._api_id
 
     @property
-    def defaults(self) -> dict:
+    def defaults(self) -> JsonDict:
         """Вернуть словарь базовых параметров для каждого запроса.
 
         В словарь входят `api_id`, признак JSON-ответа и партнерский
@@ -61,7 +68,7 @@ class BaseClient(ABC):
         return self._managed_mode
 
     @abstractmethod
-    def _request(self, path: str, data: dict) -> dict:
+    def _request(self, path: str, data: Optional[RequestData] = None) -> JsonDict:
         """Отправить подготовленный запрос на сервер `sms.ru`.
 
         :param path: Путь метода API, например `/sms/send`.
@@ -71,8 +78,21 @@ class BaseClient(ABC):
         pass
 
     @abstractmethod
-    def send(self, *numbers: str, message: str, multi: dict, from_name: str, ip_address: str, timestamp: int,
-             ttl: int, day_time: bool, translit: bool, test: bool, debug: bool, partner_id: int) -> dict:
+    def send(
+        self,
+        *numbers: str,
+        message: Optional[str] = None,
+        multi: Optional[MultiMessageMap] = None,
+        from_name: Optional[str] = None,
+        ip_address: Optional[str] = None,
+        timestamp: Optional[int] = None,
+        ttl: Optional[int] = None,
+        day_time: bool = False,
+        translit: bool = False,
+        test: Optional[bool] = None,
+        debug: bool = False,
+        partner_id: Optional[int] = None,
+    ) -> JsonDict:
         """Отправить SMS-сообщение через API `sms.ru`.
 
         Метод поддерживает два режима:
@@ -113,7 +133,7 @@ class BaseClient(ABC):
         pass
 
     @abstractmethod
-    def callcheck_add(self, phone: str) -> dict:
+    def callcheck_add(self, phone: str) -> JsonDict:
         """Добавить номер в сценарий авторизации по звонку.
 
         :param phone: Номер телефона пользователя, звонок с которого нужно
@@ -123,7 +143,7 @@ class BaseClient(ABC):
         pass
 
     @abstractmethod
-    def callcheck_status(self, check_id: str) -> dict:
+    def callcheck_status(self, check_id: str) -> JsonDict:
         """Проверить статус авторизации по звонку.
 
         :param check_id: Идентификатор проверки, полученный из `callcheck_add`.
@@ -132,7 +152,7 @@ class BaseClient(ABC):
         pass
 
     @abstractmethod
-    def status(self, sms_id: str) -> dict:
+    def status(self, sms_id: str) -> JsonDict:
         """Получить статус ранее отправленного SMS.
 
         :param sms_id: Идентификатор сообщения в системе `sms.ru`.
@@ -141,7 +161,7 @@ class BaseClient(ABC):
         pass
 
     @abstractmethod
-    def cost(self, *numbers: str, message: str) -> dict:
+    def cost(self, *numbers: str, message: str) -> JsonDict:
         """Рассчитать стоимость SMS без отправки.
 
         :param numbers: Один или несколько номеров телефона. Номера проходят
@@ -154,7 +174,7 @@ class BaseClient(ABC):
         pass
 
     @abstractmethod
-    def balance(self) -> dict:
+    def balance(self) -> JsonDict:
         """Получить текущий баланс аккаунта `sms.ru`.
 
         :return: JSON-ответ сервера с балансом аккаунта.
@@ -162,7 +182,7 @@ class BaseClient(ABC):
         pass
 
     @abstractmethod
-    def limit(self) -> dict:
+    def limit(self) -> JsonDict:
         """Получить информацию о доступных лимитах.
 
         :return: JSON-ответ сервера с лимитами аккаунта.
@@ -170,7 +190,7 @@ class BaseClient(ABC):
         pass
 
     @abstractmethod
-    def free(self) -> dict:
+    def free(self) -> JsonDict:
         """Получить информацию о бесплатном лимите сообщений.
 
         :return: JSON-ответ сервера по бесплатным лимитам.
@@ -178,7 +198,7 @@ class BaseClient(ABC):
         pass
 
     @abstractmethod
-    def senders(self) -> dict:
+    def senders(self) -> JsonDict:
         """Получить список одобренных имен отправителя.
 
         :return: JSON-ответ сервера со списком отправителей.
@@ -186,7 +206,7 @@ class BaseClient(ABC):
         pass
 
     @abstractmethod
-    def stop_list(self) -> dict:
+    def stop_list(self) -> JsonDict:
         """Получить текущий стоп-лист номеров.
 
         :return: JSON-ответ сервера со списком номеров в стоп-листе.
@@ -194,7 +214,7 @@ class BaseClient(ABC):
         pass
 
     @abstractmethod
-    def add_stop_list(self, number: str, comment: str) -> dict:
+    def add_stop_list(self, number: str, comment: str = "") -> JsonDict:
         """Добавить номер телефона в стоп-лист.
 
         :param number: Номер телефона для блокировки.
@@ -204,7 +224,7 @@ class BaseClient(ABC):
         pass
 
     @abstractmethod
-    def del_stop_list(self, number: str) -> dict:
+    def del_stop_list(self, number: str) -> JsonDict:
         """Удалить номер телефона из стоп-листа.
 
         :param number: Номер телефона для удаления.
@@ -213,7 +233,7 @@ class BaseClient(ABC):
         pass
 
     @abstractmethod
-    def callbacks(self) -> dict:
+    def callbacks(self) -> JsonDict:
         """Получить список зарегистрированных callbacks.
 
         :return: JSON-ответ сервера со списком webhook-адресов.
@@ -221,7 +241,7 @@ class BaseClient(ABC):
         pass
 
     @abstractmethod
-    def add_callback(self, url: str) -> dict:
+    def add_callback(self, url: str) -> JsonDict:
         """Добавить callback URL для уведомлений от `sms.ru`.
 
         :param url: Полный адрес callback/webhook.
@@ -230,7 +250,7 @@ class BaseClient(ABC):
         pass
 
     @abstractmethod
-    def del_callback(self, url: str) -> dict:
+    def del_callback(self, url: str) -> JsonDict:
         """Удалить callback URL из настроек аккаунта.
 
         :param url: Полный адрес callback/webhook.
@@ -238,11 +258,21 @@ class BaseClient(ABC):
         """
         pass
 
-    def _collect_data(self, numbers: tuple, message: str = None, multi=None,
-                      from_name: str = None, ip_address: str = None,
-                      timestamp: int = None, ttl: int = None, day_time: bool = False,
-                      translit: bool = False, test: bool = None, debug: bool = False,
-                      partner_id: int = None) -> dict:
+    def _collect_data(
+        self,
+        numbers: PhoneNumbers,
+        message: Optional[str] = None,
+        multi: Optional[MultiMessageMap] = None,
+        from_name: Optional[str] = None,
+        ip_address: Optional[str] = None,
+        timestamp: Optional[int] = None,
+        ttl: Optional[int] = None,
+        day_time: bool = False,
+        translit: bool = False,
+        test: Optional[bool] = None,
+        debug: bool = False,
+        partner_id: Optional[int] = None,
+    ) -> RequestData:
         """Собрать и провалидировать тело запроса для SMS-методов.
 
         Метод используется внутренне клиентами `Client` и `AsyncClient`.

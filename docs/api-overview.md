@@ -22,7 +22,7 @@ from smsru_api import OutOfPhoneNumbers, OutOfTimestamp
 
 ### Сообщения
 
-- `send(*numbers, **kwargs)` — отправить SMS
+- `send(*numbers, message=None, multi=None, from_name=None, ip_address=None, timestamp=None, ttl=None, day_time=False, translit=False, test=None, debug=False, partner_id=None)` — отправить SMS
 - `cost(*numbers, message=...)` — рассчитать стоимость
 - `status(sms_id)` — получить статус отправленного сообщения
 
