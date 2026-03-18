@@ -43,7 +43,6 @@ class TestSmsRu(unittest.TestCase):
 
     def setUp(self):
         self.smsru = Client(self.__class__.api_id)
-        self.check_id = None
 
     def test_send(self):
         response = self.smsru.send(self.__class__.test_phone, message="Test message", debug=True)
@@ -56,18 +55,15 @@ class TestSmsRu(unittest.TestCase):
         )
         self.assertEqual(response["status"], "OK")
 
-    @unittest.skipIf(os.environ.get("AUTO_TEST", "false").lower() == "true", "Skipping callcheck_add test in auto test mode")
-    def test_callcheck_add(self):
-        response = self.smsru.callcheck_add(self.__class__.test_phone)
-        self.assertEqual(response["status"], "OK")
-        self.check_id = response["check_id"]
+    @unittest.skipIf(os.environ.get("AUTO_TEST", "false").lower() == "true", "Skipping callcheck flow test in auto test mode")
+    def test_callcheck_flow(self):
+        add_response = self.smsru.callcheck_add(self.__class__.test_phone)
+        self.assertEqual(add_response["status"], "OK")
+        self.assertIn("check_id", add_response)
+        self.assertTrue(add_response["check_id"])
 
-    @unittest.skipIf(os.environ.get("AUTO_TEST", "false").lower() == "true", "Skipping callcheck_status test in auto test mode")
-    def test_callcheck_status(self):
-        if not self.check_id:
-            self.skipTest("Skipping callcheck_status test because check_id is not set")
-        response = self.smsru.callcheck_status(self.check_id)
-        self.assertEqual(response["status"], "OK")
+        status_response = self.smsru.callcheck_status(add_response["check_id"])
+        self.assertEqual(status_response["status"], "OK")
 
     def test_status(self):
         response = self.smsru.status("sms_id")
@@ -125,7 +121,6 @@ class TestAsyncSmsRu(unittest.IsolatedAsyncioTestCase):
 
     async def asyncSetUp(self):
         self.smsru = AsyncClient(self.__class__.api_id)
-        self.check_id = None
 
     async def test_send(self):
         response = await self.smsru.send(self.__class__.test_phone, message="Test message", debug=True)
@@ -138,18 +133,15 @@ class TestAsyncSmsRu(unittest.IsolatedAsyncioTestCase):
         )
         self.assertEqual(response["status"], "OK")
 
-    @unittest.skipIf(os.environ.get("AUTO_TEST", "false").lower() == "true", "Skipping callcheck_add test in auto test mode")
-    async def test_callcheck_add(self):
-        response = await self.smsru.callcheck_add(self.__class__.test_phone)
-        self.assertEqual(response["status"], "OK")
-        self.check_id = response["check_id"]
+    @unittest.skipIf(os.environ.get("AUTO_TEST", "false").lower() == "true", "Skipping callcheck flow test in auto test mode")
+    async def test_callcheck_flow(self):
+        add_response = await self.smsru.callcheck_add(self.__class__.test_phone)
+        self.assertEqual(add_response["status"], "OK")
+        self.assertIn("check_id", add_response)
+        self.assertTrue(add_response["check_id"])
 
-    @unittest.skipIf(os.environ.get("AUTO_TEST", "false").lower() == "true", "Skipping callcheck_status test in auto test mode")
-    async def test_callcheck_status(self):
-        if not self.check_id:
-            self.skipTest("Skipping callcheck_status test because check_id is not set")
-        response = await self.smsru.callcheck_status(self.check_id)
-        self.assertEqual(response["status"], "OK")
+        status_response = await self.smsru.callcheck_status(add_response["check_id"])
+        self.assertEqual(status_response["status"], "OK")
 
     async def test_status(self):
         response = await self.smsru.status("sms_id")
