@@ -173,6 +173,11 @@ response = smsru.send(
 - `send(...)` — отправка SMS
 - `cost(*numbers, message=...)` — расчет стоимости
 - `status(sms_id)` — статус сообщения
+- `OutOfPhoneNumbers`, `OutOfTimestamp` — публичные исключения библиотеки
+
+```python
+from smsru_api import OutOfPhoneNumbers, OutOfTimestamp
+```
 
 ### Авторизация по звонку
 

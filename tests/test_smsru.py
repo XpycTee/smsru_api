@@ -3,8 +3,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import httpx
 
-from smsru_api import AsyncClient, Client
-from smsru_api.template import OutOfPhoneNumbers, OutOfTimestamp
+from smsru_api import AsyncClient, Client, OutOfPhoneNumbers, OutOfTimestamp
 
 
 class BaseClientPayloadTests(unittest.TestCase):
@@ -16,6 +15,10 @@ class BaseClientPayloadTests(unittest.TestCase):
         with patch('smsru_api.template.time.time', return_value=1_000):
             with self.assertRaises(OutOfTimestamp):
                 self.client._collect_data(('79999999999',), message='Test message', timestamp=5_184_001 + 1_000)
+
+    def test_public_package_exports_exceptions(self):
+        self.assertIs(OutOfPhoneNumbers, __import__('smsru_api').OutOfPhoneNumbers)
+        self.assertIs(OutOfTimestamp, __import__('smsru_api').OutOfTimestamp)
 
     def test_collect_data_accepts_timestamp_on_upper_boundary(self):
         timestamp = 5_184_000 + 1_000
