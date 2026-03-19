@@ -219,12 +219,22 @@ from smsru_api import OutOfPhoneNumbers, OutOfTimestamp
 Для локальной разработки:
 
 ```sh
-pip install -e ".[test]"
-pytest
+.venv/bin/python -m pip install -e ".[test]"
+.venv/bin/python -m pytest
 ```
 
-Обычный `pytest` запускает только unit-тесты. Live-проверки вынесены в
-отдельный opt-in сценарий и требуют переменные окружения:
+Базовый прогон выше запускает только unit-тесты из основного локального
+окружения. Отдельную совместимость с `Python 3.14` удобно проверять в
+выделенном окружении:
+
+```sh
+python3.14 -m venv .venv314
+.venv314/bin/python -m pip install -e ".[test]"
+.venv314/bin/python -m pytest tests/test_smsru.py
+```
+
+Live-проверки вынесены в отдельный opt-in сценарий и требуют переменные
+окружения:
 
 - `SMSRU_API_ID`
 - `SMSRU_TEST_PHONE`
@@ -234,7 +244,7 @@ pytest
 Явный запуск live-тестов:
 
 ```sh
-pytest tests/test_live.py -m live
+.venv/bin/python -m pytest tests/test_live.py -m live
 ```
 
 Если установлен `python-dotenv`, live-тесты смогут подгрузить значения из

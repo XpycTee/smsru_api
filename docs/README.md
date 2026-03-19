@@ -34,14 +34,23 @@
 Для безопасной локальной проверки достаточно:
 
 ```sh
-pip install -e ".[test]"
-pytest
+.venv/bin/python -m pip install -e ".[test]"
+.venv/bin/python -m pytest
 ```
 
-Эта команда запускает только unit-тесты. Live-тесты нужно включать явно:
+Эта команда запускает только unit-тесты. Для отдельной проверки совместимости с
+`Python 3.14` используйте отдельное окружение:
 
 ```sh
-pytest tests/test_live.py -m live
+python3.14 -m venv .venv314
+.venv314/bin/python -m pip install -e ".[test]"
+.venv314/bin/python -m pytest tests/test_smsru.py
+```
+
+Live-тесты нужно включать явно:
+
+```sh
+.venv/bin/python -m pytest tests/test_live.py -m live
 ```
 
 Для live-режима нужны `SMSRU_API_ID` и `SMSRU_TEST_PHONE`. Если установлен
