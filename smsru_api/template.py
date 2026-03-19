@@ -1,14 +1,14 @@
 import re
 from abc import ABC
 from abc import abstractmethod
-from typing import Any, Dict, Mapping, Optional, Tuple
+from typing import Any, Dict, Mapping, Optional, Tuple, Union
 
 import time
 import ipaddress
 
 
 JsonDict = Dict[str, Any]
-RequestValue = int | str
+RequestValue = Union[int, str]
 RequestData = Dict[str, RequestValue]
 MultiMessageMap = Mapping[str, str]
 PhoneNumbers = Tuple[str, ...]
