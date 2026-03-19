@@ -154,6 +154,12 @@ jobs:
     needs: publish-test-pypi
 
     steps:
+      - name: Checkout the tag
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.ref }}
+
       - name: Download artifact (dist) for inspection
         uses: actions/download-artifact@v4
         with:
@@ -163,12 +169,21 @@ jobs:
       - name: Set release metadata
         id: release-meta
         run: |
+          current_tag="${GITHUB_REF_NAME}"
+          previous_tag="$(git tag --sort=-version:refname | grep -Fxv "${current_tag}" | head -n 1)"
+
           if [[ "${{ github.ref_name }}" =~ (alpha|beta|rc) ]]; then
             echo "release_state=pre" >> "$GITHUB_OUTPUT"
           else
             echo "release_state=stable" >> "$GITHUB_OUTPUT"
           fi
-          echo "release_version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+          echo "release_version=${current_tag#v}" >> "$GITHUB_OUTPUT"
+          echo "previous_tag=${previous_tag}" >> "$GITHUB_OUTPUT"
+          if [[ -n "${previous_tag}" ]]; then
+            echo "compare_url=https://github.com/${GITHUB_REPOSITORY}/compare/${previous_tag}...${current_tag}" >> "$GITHUB_OUTPUT"
+          else
+            echo "compare_url=https://github.com/${GITHUB_REPOSITORY}/releases/tag/${current_tag}" >> "$GITHUB_OUTPUT"
+          fi
       
       - name: Create (or update) draft release for this tag
         uses: softprops/action-gh-release@v2
@@ -181,16 +196,28 @@ jobs:
           body: |
             # Установка
 
-            ```
+            ```bash
             pip install smsru-api==${{ steps.release-meta.outputs.release_version }}
             ```
 
-            ## Изменения
+            ## Добавлено
 
             - 
 
-            ## Проверка перед публикацией
+            ## Изменено
 
-            - [ ] Проверен пакет в TestPyPI: https://test.pypi.org/project/smsru-api/${{ needs.publish-test-pypi.outputs.testpypi-version }}/
-            - [ ] Проверена установка и импорт
-            - [ ] Проверена версия `${{ steps.release-meta.outputs.release_version }}`
+            - 
+
+            ## Исправлено
+
+            - 
+
+            ## Что учесть при обновлении
+
+            - 
+
+            > В changelog включаем только изменения, влияющие на пользовательский опыт.
+            > Не перечисляем CI, workflow, release pipeline, внутренние refactor-правки и прочую техническую кухню, если они не меняют поведение библиотеки для пользователя.
+
+            **TestPyPI**: https://test.pypi.org/project/smsru-api/${{ needs.publish-test-pypi.outputs.testpypi-version }}/
+            **Full Changelog**: ${{ steps.release-meta.outputs.compare_url }}
