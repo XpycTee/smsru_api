@@ -41,50 +41,24 @@ pip install smsru-api
 
 ### Синхронный клиент
 
-```python
-from smsru_api import Client
-
-smsru = Client("YOUR_API_KEY")
-
-response = smsru.send("79990000000", message="Привет от sms.ru", debug=True)
-print(response)
-```
-
-Для обратной совместимости этот сценарий остается `one-shot`: на каждый
-запрос создается временный HTTP-клиент, поэтому ручное закрытие не требуется.
-
-Если нужно переиспользовать соединение для нескольких запросов подряд,
-используйте контекстный менеджер:
+Для переиспользования соединения и управления ресурсами используйте контекстный менеджер:
 
 ```python
 from smsru_api import Client
 
 with Client("YOUR_API_KEY") as smsru:
     balance = smsru.balance()
-    limit = smsru.limit()
+    response = smsru.send("79990000000", message="Привет от sms.ru", debug=True)
+    print(response)
 ```
+
+> **Примечание**: Для одного запроса можно вызвать методы напрямую без менеджера
+> `Client("YOUR_API_KEY").send(...)`. На каждый запрос будет создан временный
+> HTTP-клиент, но это также работает.
 
 ### Асинхронный клиент
 
-```python
-import asyncio
-
-from smsru_api import AsyncClient
-
-
-async def main():
-    smsru = AsyncClient("YOUR_API_KEY")
-    response = await smsru.balance()
-    print(response)
-
-
-asyncio.run(main())
-```
-
-Асинхронный клиент тоже сохраняет прежнее поведение без `async with`: каждый
-запрос выполняется через временный `httpx.AsyncClient`.
-
-Для переиспользования соединения в рамках нескольких запросов:
+Для асинхронного кода используйте `async with`:
 
 ```python
 import asyncio
@@ -95,12 +69,16 @@ from smsru_api import AsyncClient
 async def main():
     async with AsyncClient("YOUR_API_KEY") as smsru:
         balance = await smsru.balance()
-        limit = await smsru.limit()
-        return balance, limit
+        response = await smsru.send("79990000000", message="Привет от sms.ru", debug=True)
+        print(response)
 
 
 asyncio.run(main())
 ```
+
+> **Примечание**: Для одного запроса можно вызвать методы напрямую
+> `await AsyncClient("YOUR_API_KEY").send(...)`. На каждый запрос будет создан
+> временный `httpx.AsyncClient`.
 
 ### Обратная совместимость
 
@@ -120,12 +98,12 @@ async_smsru = AsyncSmsRu("YOUR_API_KEY")
 ```python
 from smsru_api import Client
 
-smsru = Client("YOUR_API_KEY")
-response = smsru.send(
-    "79990000000",
-    "79990000001",
-    message="Код подтверждения: 1234",
-)
+with Client("YOUR_API_KEY") as smsru:
+    response = smsru.send(
+        "79990000000",
+        "79990000001",
+        message="Код подтверждения: 1234",
+    )
 ```
 
 Отправить разные тексты на разные номера через `multi`:
@@ -133,13 +111,13 @@ response = smsru.send(
 ```python
 from smsru_api import Client
 
-smsru = Client("YOUR_API_KEY")
-response = smsru.send(
-    multi={
-        "79990000000": "Код подтверждения: 1234",
-        "79990000001": "Код подтверждения: 5678",
-    }
-)
+with Client("YOUR_API_KEY") as smsru:
+    response = smsru.send(
+        multi={
+            "79990000000": "Код подтверждения: 1234",
+            "79990000001": "Код подтверждения: 5678",
+        }
+    )
 ```
 
 Ключи `multi` проходят ту же нормализацию, что и обычные номера. Если после

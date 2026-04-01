@@ -8,8 +8,9 @@ API `sms.ru` позволяет подтверждать номер телефо
 ```python
 from smsru_api import Client
 
-smsru = Client("YOUR_API_KEY")
-response = smsru.callcheck_add("79990000000")
+with Client("YOUR_API_KEY") as smsru:
+    response = smsru.callcheck_add("79990000000")
+    print(response)
 ```
 
 Типичный ответ содержит:
@@ -22,13 +23,28 @@ response = smsru.callcheck_add("79990000000")
 
 `check_id` нужно сохранить для последующей проверки статуса.
 
+Асинхронный вариант:
+
+```python
+import asyncio
+from smsru_api import AsyncClient
+
+async def main():
+    async with AsyncClient("YOUR_API_KEY") as smsru:
+        response = await smsru.callcheck_add("79990000000")
+        print(response)
+
+asyncio.run(main())
+```
+
 ## Проверка статуса
 
 ```python
 from smsru_api import Client
 
-smsru = Client("YOUR_API_KEY")
-response = smsru.callcheck_status("201737-542")
+with Client("YOUR_API_KEY") as smsru:
+    response = smsru.callcheck_status("201737-542")
+    print(response)
 ```
 
 Типичный ответ:
@@ -42,10 +58,25 @@ response = smsru.callcheck_status("201737-542")
 }
 ```
 
+Асинхронный вариант:
+
+```python
+import asyncio
+from smsru_api import AsyncClient
+
+async def main():
+    async with AsyncClient("YOUR_API_KEY") as smsru:
+        response = await smsru.callcheck_status("201737-542")
+        print(response)
+
+asyncio.run(main())
+```
+
 ## Замечания
 
 - Для polling-проверок используйте `check_id`, возвращенный `callcheck_add()`.
 - Если у вас настроены callbacks, удобнее принимать статусы на своей стороне, а
   не делать частые запросы `callcheck_status()`.
+- Контекстный менеджер особенно полезен при нескольких последовательных запросах.
 - Асинхронный вариант полностью повторяет синхронный API, но вызывается через
   `await`.
