@@ -6,16 +6,19 @@
 </p>
 
 Python Versions\
-![pyversions](https://img.shields.io/pypi/pyversions/smsru-api?label=Python)
+![pyversions](https://img.shields.io/pypi/pyversions/smsru-api?label=Python&style=for-the-badge)
 
 PyPI\
-[![PyPI Downloads](https://static.pepy.tech/personalized-badge/smsru-api?period=total&units=INTERNATIONAL_SYSTEM&left_color=GRAY&right_color=GREEN&left_text=PyPI%20Downloads)](https://pepy.tech/projects/smsru-api) ![pypi](https://img.shields.io/pypi/v/smsru-api?label=PyPI%20Release)
+[![PyPI Downloads](https://img.shields.io/pepy/dt/smsru-api?style=for-the-badge)](https://pypi.org/project/smsru-api/) 
+[![pypi](https://img.shields.io/pypi/v/smsru-api?label=PyPI%20Release&style=for-the-badge)](https://pypi.org/project/smsru-api/) 
 
 GitHub\
-![GitHub Release](https://img.shields.io/github/v/release/xpyctee/smsru_api?label=GitHub%20Release) ![Contributors](https://img.shields.io/github/contributors/XpycTee/smsru_api?color=dark-green&label=Contributors) ![Issues](https://img.shields.io/github/issues/XpycTee/smsru_api?label=Issues)
+[![GitHub Release](https://img.shields.io/github/v/release/xpyctee/smsru_api?label=GitHub%20Release&style=for-the-badge)](https://github.com/XpycTee/smsru_api/releases)
+[![Contributors](https://img.shields.io/github/contributors/XpycTee/smsru_api?color=dark-green&label=Contributors&style=for-the-badge)](https://github.com/XpycTee/smsru_api/graphs/contributors)
+[![Issues](https://img.shields.io/github/issues/XpycTee/smsru_api?label=Issues&style=for-the-badge)](https://github.com/xpyctee/smsru_api/issues)
 
 License\
-![License](https://img.shields.io/github/license/XpycTee/smsru_api?label=License)
+[![License](https://img.shields.io/github/license/XpycTee/smsru_api?label=License&style=for-the-badge)](https://github.com/xpyctee/smsru_api/blob/main/LICENSE)
 
 ## О проекте
 
