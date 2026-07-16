@@ -1,8 +1,13 @@
 <p align="center">
-  <h3 align="center">SMS.RU API</h3>
-  <p align="center">
-    Синхронный и асинхронный Python API для сервиса отправки сообщений sms.ru
-  </p>
+    <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="docs/images/dark-mode.svg">
+        <source media="(prefers-color-scheme: light)" srcset="docs/images/light-mode.svg">
+    <img alt="Описание изображения" src="docs/images/light-mode.svg" width="250">
+    </picture>
+    <!--h3 align="center">SMS.RU API</h3-->
+    <p align="center">
+        Синхронный и асинхронный Python API для сервиса отправки сообщений sms.ru
+    </p>
 </p>
 
 Python Versions\
