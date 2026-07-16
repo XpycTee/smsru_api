@@ -142,7 +142,6 @@ with Client("YOUR_API_KEY") as smsru:
 - `test` — тестовый режим API
 - `debug` — локальный режим отладки; если `test` не указан, включает `test`
 - `translit` — транслитерация текста
-- `partner_id` — переопределение партнерского идентификатора
 
 Ограничения и особенности:
 
@@ -160,7 +159,7 @@ with Client("YOUR_API_KEY") as smsru:
 
 ### Сообщения
 
-- `send(*numbers, message=None, multi=None, from_name=None, ip_address=None, timestamp=None, ttl=None, day_time=False, translit=False, test=None, debug=False, partner_id=None)` — отправка SMS
+- `send(*numbers, message=None, multi=None, from_name=None, ip_address=None, timestamp=None, ttl=None, day_time=False, translit=False, test=None, debug=False)` — отправка SMS
 - `cost(*numbers, message=...)` — расчет стоимости
 - `status(sms_id)` — статус сообщения
 - `OutOfPhoneNumbers`, `OutOfTimestamp` — публичные исключения библиотеки
