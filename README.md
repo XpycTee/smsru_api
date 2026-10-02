@@ -251,6 +251,12 @@ Live-проверки вынесены в отдельный opt-in сценар
 
 Проект распространяется по лицензии Apache-2.0. Подробности в [LICENSE](LICENSE).
 
+## Помощь
+Желающие помочь разработке могут открывать issues или отправлять PR. Если вы хотите поддержать финансово:
+
+USDT (TRC20): `TH6CTQm3Hzuz4mswgDm5Bu5BkScUmp7mjz`
+USDT (TON)  : `UQCyONkweyRW7xsMdIIIXckyIgJZE4PGMw6l3vthfQ1O6VyD`
+
 ## Ссылки
 
 - GitHub: [smsru_api](https://github.com/XpycTee/smsru_api)
