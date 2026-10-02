@@ -252,10 +252,13 @@ Live-проверки вынесены в отдельный opt-in сценар
 Проект распространяется по лицензии Apache-2.0. Подробности в [LICENSE](LICENSE).
 
 ## Помощь
-Желающие помочь разработке могут открывать issues или отправлять PR. Если вы хотите поддержать финансово:
+Желающие помочь разработке могут открывать issues или отправлять PR. 
 
-USDT (TRC20): `TH6CTQm3Hzuz4mswgDm5Bu5BkScUmp7mjz`
-USDT (TON)  : `UQCyONkweyRW7xsMdIIIXckyIgJZE4PGMw6l3vthfQ1O6VyD`
+Если вы хотите поддержать финансово:
+
+- USDT (Сеть TON): `UQCyONkweyRW7xsMdIIIXckyIgJZE4PGMw6l3vthfQ1O6VyD`
+- USDT (Сеть TRC20): `TH6CTQm3Hzuz4mswgDm5Bu5BkScUmp7mjz`
+- Gram: `UQCyONkweyRW7xsMdIIIXckyIgJZE4PGMw6l3vthfQ1O6VyD`
 
 ## Ссылки
 
