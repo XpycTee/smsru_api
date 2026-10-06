@@ -1,17 +1,23 @@
 <p align="center">
-  <h3 align="center">SMS.RU API</h3>
-  <p align="center">
-    Синхронный и асинхронный Python API для сервиса отправки сообщений sms.ru
-  </p>
+    <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="docs/images/dark-mode.svg">
+        <source media="(prefers-color-scheme: light)" srcset="docs/images/light-mode.svg">
+    <img alt="Описание изображения" src="docs/images/light-mode.svg" width="250">
+    </picture>
+    <!--h3 align="center">SMS.RU API</h3-->
+    <p align="center">
+        Синхронный и асинхронный Python API для сервиса отправки сообщений sms.ru
+    </p>
 </p>
 
-![PyPI - Downloads](https://img.shields.io/pypi/dm/smsru-api?label=PyPI%20Downloads) ![pypi](https://img.shields.io/pypi/v/smsru-api?label=PyPI%20Release)
+[![PyPI Downloads](https://img.shields.io/pepy/dt/smsru-api?style=for-the-badge)](https://pypi.org/project/smsru-api/) 
+[![pypi](https://img.shields.io/pypi/v/smsru-api?label=PyPI%20Release&style=for-the-badge)](https://pypi.org/project/smsru-api/) 
 
 Python Versions\
-![pyversions](https://img.shields.io/pypi/pyversions/smsru-api?label=Python)
+![pyversions](https://img.shields.io/pypi/pyversions/smsru-api?label=Python&style=for-the-badge)
 
 License\
-![License](https://img.shields.io/github/license/XpycTee/smsru_api?label=License)
+[![License](https://img.shields.io/github/license/XpycTee/smsru_api?label=License&style=for-the-badge)](https://github.com/XpycTee/smsru_api/blob/main/LICENSE)
 
 ## Кратко
 
