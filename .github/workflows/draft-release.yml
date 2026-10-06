@@ -3,6 +3,23 @@ name: Staging Release
 on:
   push:
     tags: [ 'v*' ]
+  workflow_dispatch:
+    inputs:
+      python_version:
+        description: 'Choose the Python version for a manual build'
+        required: true
+        default: 'default'
+        type: choice
+        options:
+          - 'default'
+          - '3.12'
+          - '3.13'
+          - '3.14'
+          - '3.15'
+
+env:
+  DEFAULT_PYTHON_VERSION: '3.14'
+
 
 jobs:
   tests:
@@ -11,14 +28,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13", "3.14"]
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13", "3.14", "3.15"]
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -45,9 +62,14 @@ jobs:
           ref: ${{ github.ref }}
 
       - name: Set up Python (build)
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
-          python-version: "3.14"
+          python-version: >-
+            ${{ 
+              (inputs.python_version == '' || inputs.python_version == 'default') 
+              && env.DEFAULT_PYTHON_VERSION 
+              || inputs.python_version 
+            }}
 
       - name: Install build tools
         run: |
@@ -119,7 +141,7 @@ jobs:
           ref: ${{ github.ref }}
       
       - name: Set up Python (publish)
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
       
       - name: Install publish tools
         run: |
