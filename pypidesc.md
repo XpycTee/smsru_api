@@ -48,7 +48,7 @@ pip install smsru-api
 from smsru_api import Client
 
 smsru = Client("YOUR_API_KEY")
-response = smsru.send("79990000000", message="Привет от sms.ru", debug=True)
+response = smsru.send("79990000000", message="Привет от sms.ru")
 print(response)
 ```
 

@@ -10,9 +10,6 @@
     </p>
 </p>
 
-Python Versions\
-![pyversions](https://img.shields.io/pypi/pyversions/smsru-api?label=Python&style=for-the-badge)
-
 PyPI\
 [![PyPI Downloads](https://img.shields.io/pepy/dt/smsru-api?style=for-the-badge)](https://pypi.org/project/smsru-api/) 
 [![pypi](https://img.shields.io/pypi/v/smsru-api?label=PyPI%20Release&style=for-the-badge)](https://pypi.org/project/smsru-api/) 
@@ -21,6 +18,9 @@ GitHub\
 [![GitHub Release](https://img.shields.io/github/v/release/xpyctee/smsru_api?label=GitHub%20Release&style=for-the-badge)](https://github.com/XpycTee/smsru_api/releases)
 [![Contributors](https://img.shields.io/github/contributors/XpycTee/smsru_api?color=dark-green&label=Contributors&style=for-the-badge)](https://github.com/XpycTee/smsru_api/graphs/contributors)
 [![Issues](https://img.shields.io/github/issues/XpycTee/smsru_api?label=Issues&style=for-the-badge)](https://github.com/xpyctee/smsru_api/issues)
+
+Python Versions\
+![pyversions](https://img.shields.io/pypi/pyversions/smsru-api?label=Python&style=for-the-badge)
 
 License\
 [![License](https://img.shields.io/github/license/XpycTee/smsru_api?label=License&style=for-the-badge)](https://github.com/xpyctee/smsru_api/blob/main/LICENSE)
@@ -56,7 +56,7 @@ from smsru_api import Client
 
 with Client("YOUR_API_KEY") as smsru:
     balance = smsru.balance()
-    response = smsru.send("79990000000", message="Привет от sms.ru", debug=True)
+    response = smsru.send("79990000000", message="Привет от sms.ru")
     print(response)
 ```
 
@@ -77,7 +77,7 @@ from smsru_api import AsyncClient
 async def main():
     async with AsyncClient("YOUR_API_KEY") as smsru:
         balance = await smsru.balance()
-        response = await smsru.send("79990000000", message="Привет от sms.ru", debug=True)
+        response = await smsru.send("79990000000", message="Привет от sms.ru")
         print(response)
 
 
