@@ -47,9 +47,9 @@ pip install smsru-api
 ```python
 from smsru_api import Client
 
-smsru = Client("YOUR_API_KEY")
-response = smsru.send("79990000000", message="Привет от sms.ru")
-print(response)
+with Client("YOUR_API_KEY") as smsru:
+    response = smsru.send("79990000000", message="Привет от sms.ru")
+    print(response)
 ```
 
 Асинхронный вариант:
@@ -57,8 +57,9 @@ print(response)
 ```python
 from smsru_api import AsyncClient
 
-smsru = AsyncClient("YOUR_API_KEY")
-response = await smsru.balance()
+async with AsyncClient("YOUR_API_KEY") as smsru:
+    response = await smsru.send("79990000000", message="Привет от sms.ru")
+    print(response)
 ```
 
 ## Важные особенности
