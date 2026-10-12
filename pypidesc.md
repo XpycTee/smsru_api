@@ -1,8 +1,8 @@
 <p align="center">
     <picture>
-        <source media="(prefers-color-scheme: dark)" srcset="docs/images/dark-mode.svg">
-        <source media="(prefers-color-scheme: light)" srcset="docs/images/light-mode.svg">
-    <img alt="Описание изображения" src="docs/images/light-mode.svg" width="250">
+        <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/XpycTee/smsru_api/refs/heads/main/docs/images/dark-mode.svg">
+        <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/XpycTee/smsru_api/refs/heads/main/docs/images/light-mode.svg">
+    <img alt="Описание изображения" src="https://raw.githubusercontent.com/XpycTee/smsru_api/refs/heads/main/docs/images/light-mode.svg" width="250">
     </picture>
     <!--h3 align="center">SMS.RU API</h3-->
     <p align="center">
